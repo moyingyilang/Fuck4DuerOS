@@ -1,0 +1,21 @@
+127.0.0.1 localhost
+::1 localhost
+
+# === DuerOS / Baidu Block ===
+127.0.0.1 pcdn.baidu.com
+127.0.0.1 xray.baidu.com
+127.0.0.1 duer.baidu.com
+127.0.0.1 dueros.baidu.com
+127.0.0.1 ota.baidu.com
+127.0.0.1 statistic.baidu.com
+127.0.0.1 ag.baidu.com
+127.0.0.1 mobads.baidu.com
+127.0.0.1 pos.baidu.com
+127.0.0.1 cpro.baidu.com
+127.0.0.1 union.baidu.com
+127.0.0.1 dup.baidustatic.com
+127.0.0.1 dudulu.duer.baidu.com
+127.0.0.1 duer-static.baidu.com
+127.0.0.1 duer.baidu.com.cn
+127.0.0.1 dueros-h2.baidu.com
+127.0.0.1 duer-ota.baidu.com
