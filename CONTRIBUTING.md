@@ -150,11 +150,22 @@ Smali（如果需要）
 
 ---
 
-🔒 安全问题
 
-如果发现严重安全问题（如 RCE、提权漏洞），请不要公开提交。
+## 🔒 安全问题
 
-发邮件到：security@example.com（自行替换）
+如果发现**严重安全问题**（如 RCE、提权漏洞、供应链攻击），请**不要公开提交**。
+
+**请通过 [GitHub Security Advisories](https://github.com/moyingyilang/Fuck4DuerOS/security/advisories/new) 私密报告。**
+
+**报告流程：**
+
+1. 打开 [Security Advisories 页面](https://github.com/moyingyilang/Fuck4DuerOS/security/advisories/new)
+2. 填写漏洞标题、描述、复现步骤
+3. 提交后，维护者会尽快确认并回复
+4. 修复完成后，可以公开发布致谢
+
+**请勿在公开 Issue 中披露安全漏洞细节，直到修复完成。**
+
 
 ---
 
