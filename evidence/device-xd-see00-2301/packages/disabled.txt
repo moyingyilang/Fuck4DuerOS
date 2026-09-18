@@ -1,0 +1,7 @@
+package:com.goodfather.textbook.pad
+package:com.baidu.pcdn
+package:com.android.nfc
+package:com.baidu.duershow.statistic
+package:com.baidu.duer.ota
+package:com.sprd.powersavemodelauncher
+package:com.baidu.duerguard
