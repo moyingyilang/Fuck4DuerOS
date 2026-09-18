@@ -1,0 +1,6 @@
+id=duer_cleanup
+name=DuerOS Cleanup
+version=1.0
+versionCode=1
+author=moyingyilang
+description=Block baidu pcdn/duerguard/goodfather and system residuals
