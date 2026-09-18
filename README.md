@@ -3,7 +3,7 @@
 > 一个针对百度 DuerOS 定制 Android 设备（小度学生手机等）的净化工具集。
 > 逆向取证、解除限制、移除 PCDN、恢复系统原生体验。
 
-[![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-AAGPLv3-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Android%2010--14-green.svg)]()
 [![Root](https://img.shields.io/badge/requires-Root-red.svg)]()
 
@@ -118,7 +118,7 @@ GoodFather pm list packages -d 禁用
 
 📜 许可证
 
-GPL-3.0 License
+AGPL-3.0 License
 
 ---
 
