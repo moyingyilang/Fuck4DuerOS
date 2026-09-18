@@ -118,7 +118,7 @@ GoodFather pm list packages -d 禁用
 
 📜 许可证
 
-MIT License
+GPL-3.0 License
 
 ---
 
