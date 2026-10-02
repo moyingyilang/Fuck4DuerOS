@@ -1,0 +1,80 @@
+==========================================
+ Fuck4DuerOS - 侦察报告
+ Fri Oct  2 18:55:58 CST 2026
+==========================================
+
+[设备信息]
+  品牌: xps06e
+  型号: XD-SEE00-2301
+  Android: 12
+  SDK: 31
+
+[Root 环境]
+  Magisk ✓
+  模块目录 ✓
+
+[百度进程]
+  com.baidu.launcher
+  com.baidu.duershow.dcs
+  com.baidu.duershow.media
+  com.baidu.launcher:remote
+
+[已禁用包]
+  com.goodfather.textbook.pad
+  com.baidu.duer.aieye.correction
+  com.baidu.atomkit
+  com.baidu.duer.appstore
+  com.baidu.duer.aieye.image.preprocessing
+
+[通讯状态]
+  拨号: com.android.dialer/.main.impl.MainActivity
+  短信: com.android.messaging/.ui.conversation.LaunchConversationActivity
+
+[PCDN 库文件]
+  libcyber-pcdn.so = 0 字节
+  libcyber-pcdn.so = 0 字节
+  libcyber-pcdn.so = 0 字节
+
+[关键系统组件]
+  存在: /system/app/PCDN
+  存在: /system/app/Duerguard
+  存在: /system/app/GoodFather_DuerPhone
+  存在: /system/priv-app/DuerShowStatistic
+  存在: /system/priv-app/DuerShowOTA
+
+[Magisk 模块]
+  duer_cleanup 已安装并启用
+
+[PCDN 库覆盖验证]
+  ⚠️  com.baidu.launcher 库从 APK 内直接加载，遮蔽无效
+      codePath=/data/app/~~-rk9btGny9Lu9xW9pJu_dQ==/com.baidu.launcher-3M3jr0A73iFIVZYxqjmb0A==
+      apk=/data/app/~~-rk9btGny9Lu9xW9pJu_dQ==/com.baidu.launcher-3M3jr0A73iFIVZYxqjmb0A==/base.apk
+  ✓  com.baidu.duershow.media 库已解压并被遮蔽：/system/app/DuerShowMedia/lib/arm64/libcyber-pcdn.so
+  ✓  com.baidu.atomkit 库已解压并被遮蔽：/system/app/DuerShowSwan/lib/arm64/libcyber-pcdn.so
+  ⚠️  /data/app 下发现 PCDN 库（非系统预置，模块不覆盖）：
+      /data/app/~~WPlaZtJzxb8uk5Q8xrryNg==/com.baidu.duer.superapp-oJ8M9sGUJlzrsznKCFApMQ==/lib/arm/libpcdn-jni.so
+  ⚠️  = 该应用的 PCDN 库实际可被动态链接器加载。
+
+[hosts 屏蔽]
+  ✓ 已屏蔽百度上报域名
+    127.0.0.1 pcdn.baidu.com
+    127.0.0.1 xray.baidu.com
+    127.0.0.1 duer.baidu.com
+    127.0.0.1 dueros.baidu.com
+    127.0.0.1 ota.baidu.com
+    127.0.0.1 statistic.baidu.com
+    127.0.0.1 ag.baidu.com
+    127.0.0.1 mobads.baidu.com
+    127.0.0.1 pos.baidu.com
+    127.0.0.1 cpro.baidu.com
+    127.0.0.1 union.baidu.com
+    127.0.0.1 dup.baidustatic.com
+    127.0.0.1 dudulu.duer.baidu.com
+    127.0.0.1 duer-static.baidu.com
+    127.0.0.1 duer.baidu.com.cn
+    127.0.0.1 dueros-h2.baidu.com
+    127.0.0.1 duer-ota.baidu.com
+
+==========================================
+ 侦察完成。如果以上信息符合预期，可执行 install.sh
+==========================================

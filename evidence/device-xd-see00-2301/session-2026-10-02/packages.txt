@@ -1,0 +1,56 @@
+# 所有含 baidu/duer/xiaodu/goodfather 的包
+package:com.baidu.duer.superapp
+package:com.goodfather.textbook.pad
+package:com.baidu.duershow.media
+package:com.baidu.duer.aieye.correction
+package:com.baidu.atomkit
+package:com.xiaodu.speak
+package:com.baidu.duershow.dcs
+package:com.baidu.duer.appstore
+package:com.baidu.launcher
+package:com.baidu.duer.aieye.image.preprocessing
+
+# 已禁用
+package:com.goodfather.textbook.pad
+package:com.baidu.duer.aieye.correction
+package:com.baidu.atomkit
+package:com.baidu.duer.appstore
+package:com.baidu.duer.aieye.image.preprocessing
+
+# 已启用
+package:com.baidu.duer.superapp
+package:com.baidu.duershow.media
+package:com.xiaodu.speak
+package:com.baidu.duershow.dcs
+package:com.baidu.launcher
+
+# 系统预置
+package:com.baidu.duershow.media
+package:com.baidu.duer.aieye.correction
+package:com.baidu.atomkit
+package:com.baidu.duershow.dcs
+package:com.baidu.duer.appstore
+package:com.baidu.launcher
+package:com.baidu.duer.aieye.image.preprocessing
+
+# APK 路径
+--- com.baidu.duer.superapp
+package:/data/app/~~WPlaZtJzxb8uk5Q8xrryNg==/com.baidu.duer.superapp-oJ8M9sGUJlzrsznKCFApMQ==/base.apk
+--- com.goodfather.textbook.pad
+package:/data/app/~~d1fHqvWgtGDbRoL-mR3Vow==/com.goodfather.textbook.pad-8Fxg_De9Gqo_3KKYKLqVnw==/base.apk
+--- com.baidu.duershow.media
+package:/system/app/DuerShowMedia/DuerShowMedia.apk
+--- com.baidu.duer.aieye.correction
+package:/system/app/Correction/Correction.apk
+--- com.baidu.atomkit
+package:/system/app/DuerShowSwan/DuerShowSwan.apk
+--- com.xiaodu.speak
+package:/system/preloadapp/AI_Speaking/AI_Speaking.apk
+--- com.baidu.duershow.dcs
+package:/system/app/DCS/DCS.apk
+--- com.baidu.duer.appstore
+package:/system/app/appstore_xiaodu/appstore_xiaodu.apk
+--- com.baidu.launcher
+package:/data/app/~~-rk9btGny9Lu9xW9pJu_dQ==/com.baidu.launcher-3M3jr0A73iFIVZYxqjmb0A==/base.apk
+--- com.baidu.duer.aieye.image.preprocessing
+package:/system/app/PhotoProcessing/PhotoProcessing.apk

@@ -1,0 +1,16 @@
+ro.product.brand                 xps06e
+ro.product.model                 XD-SEE00-2301
+ro.product.device                xps06e
+ro.product.name                  xps06e
+ro.build.display.id              DuerShow_T616_v1.65.0.20250825010819358.R
+ro.build.version.release         12
+ro.build.version.sdk             31
+ro.build.fingerprint             xps06e/xps06e/xps06e:12/SP1A.210812.016/20250825010819358:user/release-keys
+ro.build.date                    Mon Aug 25 08:56:09 CST 2025
+ro.build.type                    user
+ro.build.tags                    release-keys
+ro.product.manufacturer          Xiaodu
+ro.boot.verifiedbootstate        green
+ro.boot.flash.locked             1
+ro.secure                        1
+ro.debuggable                    1

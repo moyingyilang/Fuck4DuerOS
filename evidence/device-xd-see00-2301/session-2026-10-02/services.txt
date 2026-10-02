@@ -1,0 +1,182 @@
+# PCDN / Duer 相关服务
+  * ServiceRecord{71e683e u0 com.baidu.duershow.media/.MediaServerService}
+    intent={act=com.baidu.duershow.media.MediaServerService pkg=com.baidu.duershow.media}
+    packageName=com.baidu.duershow.media
+    processName=com.baidu.duershow.media
+    baseDir=/system/app/DuerShowMedia/DuerShowMedia.apk
+    dataDir=/data/user/0/com.baidu.duershow.media
+    app=ProcessRecord{3c8f9a7 6149:com.baidu.duershow.media/u0a70}
+    infoAllowStartForeground=[callingPackage: com.baidu.launcher; callingUid: 10077; uidState: BFGS; intent: Intent { act=com.baidu.duershow.media.MediaServerService pkg=com.baidu.duershow.media }; code:ACTIVITY_STARTER; tempAllowListReason:<,reasonCode:SYSTEM_ALLOW_LISTED,duration:9223372036854775807,callingUid:-1>; targetSdkVersion:23; callerTargetSdkVersion:23; startForegroundCount:0; bindFromPackage:null]
+      intent={act=com.baidu.duershow.media.MediaServerService pkg=com.baidu.duershow.media}
+          ConnectionRecord{2497572 u0 CR WPRI com.baidu.duershow.media/.MediaServerService:@14f6ac1}
+          ConnectionRecord{39d7266 u0 CR WPRI com.baidu.duershow.media/.MediaServerService:@14f6ac1}
+      ConnectionRecord{39d7266 u0 CR WPRI com.baidu.duershow.media/.MediaServerService:@14f6ac1}
+      ConnectionRecord{2497572 u0 CR WPRI com.baidu.duershow.media/.MediaServerService:@14f6ac1}
+  * ServiceRecord{c1a721e u0 com.baidu.launcher/com.baidu.duershow.idlestate.IdleMonitorService}
+    intent={cmp=com.baidu.launcher/com.baidu.duershow.idlestate.IdleMonitorService}
+    infoAllowStartForeground=[callingPackage: android; callingUid: 1000; uidState: PER ; intent: Intent { cmp=com.baidu.launcher/com.baidu.duershow.idlestate.IdleMonitorService }; code:PROC_STATE_PERSISTENT; tempAllowListReason:<null>; targetSdkVersion:23; callerTargetSdkVersion:31; startForegroundCount:0; bindFromPackage:null]
+      intent={cmp=com.baidu.launcher/com.baidu.duershow.idlestate.IdleMonitorService}
+          ConnectionRecord{5563659 u0 CR FGSA CAPS com.baidu.launcher/com.baidu.duershow.idlestate.IdleMonitorService:@fafcaa0}
+      ConnectionRecord{5563659 u0 CR FGSA CAPS com.baidu.launcher/com.baidu.duershow.idlestate.IdleMonitorService:@fafcaa0}
+  * ServiceRecord{143675e u0 com.baidu.duershow.dcs/.DcsService}
+    intent={act=com.baidu.duer.dcs.service.DcsRemoteService.ACTION dat=pkg://com.baidu.launcher:2838 pkg=com.baidu.duershow.dcs}
+    packageName=com.baidu.duershow.dcs
+    processName=com.baidu.duershow.dcs
+    dataDir=/data/user/0/com.baidu.duershow.dcs
+    app=ProcessRecord{1a94ac6 3525:com.baidu.duershow.dcs/u0a68}
+    recentCallingPackage=com.baidu.duershow.media
+    infoAllowStartForeground=[callingPackage: com.baidu.launcher; callingUid: 10077; uidState: TOP ; intent: Intent { act=com.baidu.duer.dcs.service.DcsRemoteService.ACTION dat=pkg://com.baidu.launcher:2838 pkg=com.baidu.duershow.dcs (has extras) }; code:PROC_STATE_TOP; tempAllowListReason:<,reasonCode:SYSTEM_ALLOW_LISTED,duration:9223372036854775807,callingUid:-1>; targetSdkVersion:23; callerTargetSdkVersion:23; startForegroundCount:0; bindFromPackage:null]
+      intent={act=com.baidu.duer.dcs.service.DcsRemoteService.ACTION dat=pkg://com.baidu.launcher:2838 pkg=com.baidu.duershow.dcs}
+          ConnectionRecord{bf3908 u0 CR com.baidu.duershow.dcs/.DcsService:@80b7eab}
+      intent={act=com.baidu.duer.dcs.service.DcsRemoteService.ACTION dat=pkg://com.baidu.duershow.media:6149 pkg=com.baidu.duershow.dcs}
+      * Client AppBindRecord{3f0a7aa ProcessRecord{3c8f9a7 6149:com.baidu.duershow.media/u0a70}}
+          ConnectionRecord{80c3e3e u0 IMP com.baidu.duershow.dcs/.DcsService:@53d1ef9}
+      ConnectionRecord{80c3e3e u0 IMP com.baidu.duershow.dcs/.DcsService:@53d1ef9}
+      ConnectionRecord{bf3908 u0 CR com.baidu.duershow.dcs/.DcsService:@80b7eab}
+  * ServiceRecord{99e95a8 u0 com.baidu.duershow.media/com.baidu.duer.base.audio.service.AudioService}
+    intent={cmp=com.baidu.duershow.media/com.baidu.duer.base.audio.service.AudioService}
+    packageName=com.baidu.duershow.media
+    processName=com.baidu.duershow.media
+    baseDir=/system/app/DuerShowMedia/DuerShowMedia.apk
+    dataDir=/data/user/0/com.baidu.duershow.media
+    app=ProcessRecord{3c8f9a7 6149:com.baidu.duershow.media/u0a70}
+    recentCallingPackage=com.baidu.duershow.media
+    infoAllowStartForeground=[callingPackage: com.baidu.duershow.media; callingUid: 10070; uidState: SVC ; intent: Intent { cmp=com.baidu.duershow.media/com.baidu.duer.base.audio.service.AudioService (has extras) }; code:SYSTEM_ALERT_WINDOW_PERMISSION; tempAllowListReason:<null>; targetSdkVersion:23; callerTargetSdkVersion:23; startForegroundCount:0; bindFromPackage:null]
+      intent={act=duershow.systemui.SystemUIService pkg=com.android.systemui}
+    intent={act=duershow.launcher3.Launcher3Service pkg=com.android.launcher3}
+    infoAllowStartForeground=[callingPackage: com.baidu.launcher; callingUid: 10077; uidState: TOP ; intent: Intent { act=duershow.launcher3.Launcher3Service pkg=com.android.launcher3 }; code:PROC_STATE_TOP; tempAllowListReason:<,reasonCode:SYSTEM_ALLOW_LISTED,duration:9223372036854775807,callingUid:-1>; targetSdkVersion:31; callerTargetSdkVersion:23; startForegroundCount:0; bindFromPackage:null]
+      intent={act=duershow.launcher3.Launcher3Service pkg=com.android.launcher3}
+  * ConnectionRecord{39d7266 u0 CR WPRI com.baidu.duershow.media/.MediaServerService:@14f6ac1}
+    binding=AppBindRecord{28b6f53 com.baidu.duershow.media/.MediaServerService:com.baidu.launcher}
+  * ConnectionRecord{2497572 u0 CR WPRI com.baidu.duershow.media/.MediaServerService:@14f6ac1}
+    binding=AppBindRecord{28b6f53 com.baidu.duershow.media/.MediaServerService:com.baidu.launcher}
+  * ConnectionRecord{80c3e3e u0 IMP com.baidu.duershow.dcs/.DcsService:@53d1ef9}
+    binding=AppBindRecord{3f0a7aa com.baidu.duershow.dcs/.DcsService:com.baidu.duershow.media}
+  * ConnectionRecord{bf3908 u0 CR com.baidu.duershow.dcs/.DcsService:@80b7eab}
+    binding=AppBindRecord{87daa4c com.baidu.duershow.dcs/.DcsService:com.baidu.launcher}
+  * ConnectionRecord{5563659 u0 CR FGSA CAPS com.baidu.launcher/com.baidu.duershow.idlestate.IdleMonitorService:@fafcaa0}
+    binding=AppBindRecord{8c779d9 com.baidu.launcher/com.baidu.duershow.idlestate.IdleMonitorService:system}
+
+# 已注册的 Baidu ContentProvider
+      -> 2838:com.baidu.launcher/u0a77 s1/1 u0/0 +8h9m44s431ms
+      -> 3525:com.baidu.duershow.dcs/u0a68 s1/1 u0/0 +8h9m42s442ms
+      -> 6149:com.baidu.duershow.media/u0a70 s1/1 u0/0 +8h9m18s612ms
+      -> 27693:com.baidu.launcher:remote/u0a77 s1/1 u0/0 +33m21s473ms
+  * ContentProviderRecord{4485af5 u0 com.baidu.launcher/com.baidu.launcher3.LauncherProvider}
+    package=com.baidu.launcher process=com.baidu.launcher
+    proc=ProcessRecord{109983d 2838:com.baidu.launcher/u0a77}
+    authority=com.baidu.launcher3.settings
+  * ContentProviderRecord{4d764eb u0 com.baidu.launcher/androidx.lifecycle.ProcessLifecycleOwnerInitializer}
+    package=com.baidu.launcher process=com.baidu.launcher
+    proc=ProcessRecord{109983d 2838:com.baidu.launcher/u0a77}
+    authority=com.baidu.launcher.lifecycle-process
+  * ContentProviderRecord{59fd8e1 u0 com.baidu.launcher/com.baidu.duer.account.provider.UserInfoProvider}
+    package=com.baidu.launcher process=com.baidu.launcher
+    proc=ProcessRecord{109983d 2838:com.baidu.launcher/u0a77}
+    authority=com.baidu.baiduaccount.provider.userinfoprovider
+  * ContentProviderRecord{ca425bf u0 com.baidu.launcher/com.baidu.duer.net.RemoteReceiverManager$RemoteTransferProvider}
+    package=com.baidu.launcher process=com.baidu.launcher
+    proc=ProcessRecord{109983d 2838:com.baidu.launcher/u0a77}
+    authority=com.baidu.launcher.setting
+  * ContentProviderRecord{cfcf2fd u0 com.baidu.launcher/com.baidu.duershow.system.provider.DefaultConfigProvider}
+    package=com.baidu.launcher process=com.baidu.launcher
+    proc=ProcessRecord{109983d 2838:com.baidu.launcher/u0a77}
+    authority=com.baidu.launcher.DEFAULT_CONFIG_PROVIDER
+  * ContentProviderRecord{4fdce23 u0 com.baidu.launcher/com.baidu.duer.settings.base.provider.CastContentProvider}
+    package=com.baidu.launcher process=com.baidu.launcher
+    proc=ProcessRecord{109983d 2838:com.baidu.launcher/u0a77}
+    authority=com.baidu.duershow.cast.provider
+  * ContentProviderRecord{de0c977 u0 com.baidu.launcher/com.baidu.duer.settings.base.utils.usage.AppUsageInfoProvdier}
+    package=com.baidu.launcher process=com.baidu.launcher
+    proc=ProcessRecord{109983d 2838:com.baidu.launcher/u0a77}
+    authority=com.baidu.launcher.provider.app_usage_info
+  * ContentProviderRecord{10e8613 u0 com.baidu.launcher/com.baidu.duer.setting.globalsetting.GlobalSettingContentProvider}
+    package=com.baidu.launcher process=com.baidu.launcher
+    proc=ProcessRecord{109983d 2838:com.baidu.launcher/u0a77}
+    authority=com.baidu.duershow.globalsetting
+  * ContentProviderRecord{b51706f u0 com.baidu.launcher/com.baidu.duershow.base.provider.DuershowBaseProvider}
+    package=com.baidu.launcher process=com.baidu.launcher
+    proc=ProcessRecord{109983d 2838:com.baidu.launcher/u0a77}
+    authority=com.baidu.duershow.provider.data
+  * ContentProviderRecord{3667cf1 u0 com.baidu.launcher/com.baidu.duer.duerpet.contentprovider.PetSharedPrefsContentProvider}
+    package=com.baidu.launcher process=com.baidu.launcher
+    proc=ProcessRecord{109983d 2838:com.baidu.launcher/u0a77}
+    authority=com.baidu.duer.duerpet.contentprovider.PetSharedPrefsContentProvider
+  * ContentProviderRecord{9bf8461 u0 com.baidu.launcher/com.baidu.sofire.MyProvider}
+    package=com.baidu.launcher process=com.baidu.launcher
+    proc=ProcessRecord{109983d 2838:com.baidu.launcher/u0a77}
+    authority=com.baidu.launcher.sofire.ac.provider
+  * ContentProviderRecord{77a4b55 u0 com.baidu.launcher/com.baidu.duershow.provider.DataMigrationProvider}
+    package=com.baidu.launcher process=com.baidu.launcher
+    proc=ProcessRecord{109983d 2838:com.baidu.launcher/u0a77}
+    authority=com.baidu.launcher.DATA_MIGRATION
+  * ContentProviderRecord{6f41835 u0 com.baidu.launcher/com.baidu.duer.account.provider.DeviceInfoProvider}
+    package=com.baidu.launcher process=com.baidu.launcher
+    proc=ProcessRecord{109983d 2838:com.baidu.launcher/u0a77}
+    authority=com.baidu.baiduaccount.provider.deviceinfoprovider
+  * ContentProviderRecord{1470ff u0 com.baidu.launcher/com.baidu.duershow.media.client.upgrade.MediaUpgradeProvider}
+    package=com.baidu.launcher process=com.baidu.launcher
+    proc=ProcessRecord{109983d 2838:com.baidu.launcher/u0a77}
+    authority=com.baidu.launcher.UPGRADE_MEDIA
+  * ContentProviderRecord{3c91e1b u0 com.baidu.launcher/com.baidu.duer.settings.base.provider.SettingsContentProvider}
+    package=com.baidu.launcher process=com.baidu.launcher
+    proc=ProcessRecord{109983d 2838:com.baidu.launcher/u0a77}
+    authority=com.baidu.duer.duershowsettings.provider
+  * ContentProviderRecord{c44a983 u0 com.baidu.launcher/com.baidu.sapi2.provider.FileProvider}
+    package=com.baidu.launcher process=com.baidu.launcher
+    proc=ProcessRecord{109983d 2838:com.baidu.launcher/u0a77}
+    authority=com.baidu.launcher.passfileprovider
+  * ContentProviderRecord{a1e5adf u0 com.baidu.launcher/com.baidu.cui.dcsupgrade.DcsUpgradeProvider}
+    package=com.baidu.launcher process=com.baidu.launcher
+    proc=ProcessRecord{109983d 2838:com.baidu.launcher/u0a77}
+    authority=com.baidu.launcher.UPGRADE_DCS
+  * ContentProviderRecord{1dafaad u0 com.baidu.launcher/com.baidu.duer.account.provider.AccountContentProvider}
+    package=com.baidu.launcher process=com.baidu.launcher
+    proc=ProcessRecord{109983d 2838:com.baidu.launcher/u0a77}
+    authority=com.baidu.baiduaccount.provider.accountcontentadapter
+  * ContentProviderRecord{c57dddb u0 com.baidu.launcher/com.xiaoyu.communication.provider.CallStateProvider}
+    package=com.baidu.launcher process=com.baidu.launcher
+    proc=ProcessRecord{109983d 2838:com.baidu.launcher/u0a77}
+  * ContentProviderRecord{9f1d351 u0 com.baidu.launcher/com.baidu.duer.foundation.location.LocationProvider}
+    package=com.baidu.launcher process=com.baidu.launcher
+    proc=ProcessRecord{109983d 2838:com.baidu.launcher/u0a77}
+    authority=com.baidu.launcher.LOCATION_PROVIDER
+  * ContentProviderRecord{9b86745 u0 com.baidu.duershow.media/androidx.lifecycle.ProcessLifecycleOwnerInitializer}
+    package=com.baidu.duershow.media process=com.baidu.duershow.media
+    proc=ProcessRecord{3c8f9a7 6149:com.baidu.duershow.media/u0a70}
+    authority=com.baidu.duershow.media.lifecycle-process
+  * ContentProviderRecord{41478f9 u0 com.baidu.launcher/androidx.core.content.FileProvider}
+    package=com.baidu.launcher process=com.baidu.launcher
+    proc=ProcessRecord{109983d 2838:com.baidu.launcher/u0a77}
+    authority=com.baidu.launcher.fileprovider
+  * ContentProviderRecord{2165bb u0 com.baidu.launcher/com.baidu.duershow.provider.LauncherConfigProvider}
+    package=com.baidu.launcher process=com.baidu.launcher
+    proc=ProcessRecord{109983d 2838:com.baidu.launcher/u0a77}
+    authority=com.baidu.launcher.LAUNCHER_CONFIG
+  * ContentProviderRecord{8d3b911 u0 com.baidu.launcher/com.xiaoyu.db.provider.DatabaseContentProvider}
+    package=com.baidu.launcher process=com.baidu.launcher
+    proc=ProcessRecord{109983d 2838:com.baidu.launcher/u0a77}
+  com.baidu.launcher.passfileprovider: c44a983/com.baidu.launcher/com.baidu.sapi2.provider.FileProvider
+  com.baidu.duer.duerpet.contentprovider.PetSharedPrefsContentProvider: 3667cf1/com.baidu.launcher/com.baidu.duer.duerpet.contentprovider.PetSharedPrefsContentProvider
+  com.baidu.baiduaccount.provider.deviceinfoprovider: 6f41835/com.baidu.launcher/com.baidu.duer.account.provider.DeviceInfoProvider
+  com.baidu.duershow.cast.provider: 4fdce23/com.baidu.launcher/com.baidu.duer.settings.base.provider.CastContentProvider
+  com.baidu.launcher3.settings: 4485af5/com.baidu.launcher/com.baidu.launcher3.LauncherProvider
+  com.baidu.duershow.globalsetting: 10e8613/com.baidu.launcher/com.baidu.duer.setting.globalsetting.GlobalSettingContentProvider
+  com.baidu.baiduaccount.provider.userinfoprovider: 59fd8e1/com.baidu.launcher/com.baidu.duer.account.provider.UserInfoProvider
+  com.baidu.launcher.DATA_MIGRATION: 77a4b55/com.baidu.launcher/com.baidu.duershow.provider.DataMigrationProvider
+  com.baidu.launcher.LOCATION_PROVIDER: 9f1d351/com.baidu.launcher/com.baidu.duer.foundation.location.LocationProvider
+  com.xiaoyu.communication.provider.callstateprovider: c57dddb/com.baidu.launcher/com.xiaoyu.communication.provider.CallStateProvider
+  com.baidu.launcher.DEFAULT_CONFIG_PROVIDER: cfcf2fd/com.baidu.launcher/com.baidu.duershow.system.provider.DefaultConfigProvider
+  com.baidu.launcher.LAUNCHER_CONFIG: 2165bb/com.baidu.launcher/com.baidu.duershow.provider.LauncherConfigProvider
+  com.baidu.launcher.provider.app_usage_info: de0c977/com.baidu.launcher/com.baidu.duer.settings.base.utils.usage.AppUsageInfoProvdier
+  com.baidu.launcher.sofire.ac.provider: 9bf8461/com.baidu.launcher/com.baidu.sofire.MyProvider
+  com.baidu.launcher.lifecycle-process: 4d764eb/com.baidu.launcher/androidx.lifecycle.ProcessLifecycleOwnerInitializer
+  com.xiaoyu.db.provider.DatabaseContentProvider: 8d3b911/com.baidu.launcher/com.xiaoyu.db.provider.DatabaseContentProvider
+  com.baidu.launcher.UPGRADE_DCS: a1e5adf/com.baidu.launcher/com.baidu.cui.dcsupgrade.DcsUpgradeProvider
+  com.baidu.launcher.setting: ca425bf/com.baidu.launcher/com.baidu.duer.net.RemoteReceiverManager$RemoteTransferProvider
+  com.baidu.launcher.fileprovider: 41478f9/com.baidu.launcher/androidx.core.content.FileProvider
+  com.baidu.duershow.media.lifecycle-process: 9b86745/com.baidu.duershow.media/androidx.lifecycle.ProcessLifecycleOwnerInitializer
+  com.baidu.duershow.provider.data: b51706f/com.baidu.launcher/com.baidu.duershow.base.provider.DuershowBaseProvider
+  com.baidu.baiduaccount.provider.accountcontentadapter: 1dafaad/com.baidu.launcher/com.baidu.duer.account.provider.AccountContentProvider
+  com.baidu.duer.duershowsettings.provider: 3c91e1b/com.baidu.launcher/com.baidu.duer.settings.base.provider.SettingsContentProvider
+  com.baidu.launcher.UPGRADE_MEDIA: 1470ff/com.baidu.launcher/com.baidu.duershow.media.client.upgrade.MediaUpgradeProvider

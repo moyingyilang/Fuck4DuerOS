@@ -1,0 +1,34 @@
+# 扫描所有预置 APK 内的 pcdn/xray 条目
+=== /system/app/DuerShowLauncher/DuerShowLauncher.apk
+  2794344  2009-01-01 00:00   lib/arm64-v8a/libcyber-pcdn.so
+=== /system/app/DuerShowMedia/DuerShowMedia.apk
+  2794344  2009-01-01 00:00   lib/arm64-v8a/libcyber-pcdn.so
+=== /system/app/DuerShowSwan/DuerShowSwan.apk
+  2794344  2009-01-01 00:00   lib/arm64-v8a/libcyber-pcdn.so
+
+# 名称可疑的预置 APK
+/system/app/DuerShowLauncher/DuerShowLauncher.apk
+/system/app/DuerShowMedia/DuerShowMedia.apk
+/system/app/DuerShowSwan/DuerShowSwan.apk
+/system/app/appstore_xiaodu/appstore_xiaodu.apk
+/system/app/kdxxj_bdc_xiaodu/kdxxj_bdc_xiaodu.apk
+/system/app/kdxxj_dcgd_xiaodu/kdxxj_dcgd_xiaodu.apk
+/system/app/kdxxj_download_xiaodu/kdxxj_download_xiaodu.apk
+/system/app/kdxxj_jpkc_xiaodu/kdxxj_jpkc_xiaodu.apk
+/system/app/kdxxj_ksb_xiaodu/kdxxj_ksb_xiaodu.apk
+/system/app/kdxxj_music_xiaodu/kdxxj_music_xiaodu.apk
+/system/app/kdxxj_qkjyk_xiaodu/kdxxj_qkjyk_xiaodu.apk
+/system/app/kdxxj_register_launcher_xiaodu/kdxxj_register_launcher_xiaodu.apk
+/system/app/kdxxj_rjdd_xiaodu/kdxxj_rjdd_xiaodu.apk
+/system/app/kdxxj_tbfd_xiaodu/kdxxj_tbfd_xiaodu.apk
+/system/app/kdxxj_tbxbg_xiaodu/kdxxj_tbxbg_xiaodu.apk
+/system/app/kdxxj_tiku_xiaodu/kdxxj_tiku_xiaodu.apk
+/system/app/kdxxj_yyts_xiaodu/kdxxj_yyts_xiaodu.apk
+/system/app/kdxxj_zncd_xiaodu/kdxxj_zncd_xiaodu.apk
+/system/preloadapp/baiduTranslate-xiaodu/baiduTranslate-xiaodu.apk
+/system/preloadapp/calculator_xiaodu/calculator_xiaodu.apk
+/system/preloadapp/calendar_xiaodu/calendar_xiaodu.apk
+/system/preloadapp/kdxxj_zx_xiaodu/kdxxj_zx_xiaodu.apk
+/system/preloadapp/weather_xiaodu/weather_xiaodu.apk
+/system_ext/app/DuerDeskClock/DuerDeskClock.apk
+/system_ext/priv-app/DuerContacts/DuerContacts.apk

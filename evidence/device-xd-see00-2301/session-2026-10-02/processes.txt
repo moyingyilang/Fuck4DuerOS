@@ -1,0 +1,497 @@
+# ps -A
+  PID  PPID USER         NAME                       
+    1     0 root         init
+    2     0 root         [kthreadd]
+    3     2 root         [rcu_gp]
+    4     2 root         [rcu_par_gp]
+    6     2 root         [kworker/0:0H-kblockd]
+    8     2 root         [mm_percpu_wq]
+   10     2 root         [ksoftirqd/0]
+   11     2 root         [rcu_preempt]
+   12     2 root         [migration/0]
+   14     2 root         [cpuhp/0]
+   15     2 root         [cpuhp/1]
+   16     2 root         [migration/1]
+   17     2 root         [ksoftirqd/1]
+   19     2 root         [kworker/1:0H-kblockd]
+   20     2 root         [cpuhp/2]
+   21     2 root         [migration/2]
+   22     2 root         [ksoftirqd/2]
+   24     2 root         [kworker/2:0H-kblockd]
+   25     2 root         [cpuhp/3]
+   26     2 root         [migration/3]
+   27     2 root         [ksoftirqd/3]
+   29     2 root         [kworker/3:0H-kblockd]
+   30     2 root         [cpuhp/4]
+   31     2 root         [migration/4]
+   32     2 root         [ksoftirqd/4]
+   34     2 root         [kworker/4:0H-kblockd]
+   35     2 root         [cpuhp/5]
+   36     2 root         [migration/5]
+   37     2 root         [ksoftirqd/5]
+   39     2 root         [kworker/5:0H]
+   40     2 root         [cpuhp/6]
+   41     2 root         [migration/6]
+   42     2 root         [ksoftirqd/6]
+   44     2 root         [kworker/6:0H-kblockd]
+   45     2 root         [cpuhp/7]
+   46     2 root         [migration/7]
+   47     2 root         [ksoftirqd/7]
+   49     2 root         [kworker/7:0H-kblockd]
+   50     2 root         [netns]
+   51     2 root         [rcu_tasks_kthre]
+   52     2 root         [kauditd]
+   55     2 root         [oom_reaper]
+   56     2 root         [writeback]
+   57     2 root         [kcompactd0]
+   75     2 root         [cryptd]
+  103     2 root         [kblockd]
+  104     2 root         [blkcg_punt_bio]
+  105     2 root         [edac-poller]
+  106     2 root         [ion_system_heap]
+  107     2 root         [devfreq_wq]
+  109     2 root         [watchdogd]
+  113     2 root         [cfg80211]
+  142     2 root         [core_ctl/0]
+  143     2 root         [core_ctl/6]
+  144     2 root         [kswapd0]
+  147     2 root         [kthrotld]
+  149     2 root         [uas]
+  150     2 root         [dm_bufio_cache]
+  151     2 root         [ipv6_addrconf]
+  153     2 root         [krfcommd]
+  154     2 root         [sprd-rotation/0]
+  155     2 root         [sprd-rotation/1]
+  156     2 root         [sprd-rotation/2]
+  157     2 root         [sprd-rotation/3]
+  158     2 root         [sprd-rotation/4]
+  159     2 root         [sprd-rotation/5]
+  160     2 root         [sprd-rotation/6]
+  161     2 root         [sprd-rotation/7]
+  169     2 root         [spi4]
+  170     2 root         [irq/76-spi4.0]
+  171     2 root         [scsi_eh_0]
+  172     2 root         [scsi_tmf_0]
+  173     2 root         [ufs_eh_wq_0]
+  174     2 root         [ufs_clk_gating_]
+  175     2 root         [kworker/6:1H-kblockd]
+  178     2 root         [kworker/4:1H-kblockd]
+  180     2 root         [kworker/2:1H-kblockd]
+  181     2 root         [irq/18-200d0000]
+  182     2 root         [irq/19-200e0000]
+  183     2 root         [irq/20-200f0000]
+  184     2 root         [irq/21-20100000]
+  185     2 root         [irq/22-20110000]
+  186     2 root         [irq/23-20210000]
+  187     2 root         [sugov:0]
+  189     2 root         [sugov:6]
+  190     2 root         [sdhci]
+  192     2 root         [irq/26-mmc0]
+  193     2 root         [sdhci]
+  194     2 root         [irq/27-mmc1]
+  195     2 root         [irq/85-201a0000]
+  196     2 root         [irq/86-sec-nfc]
+  198     2 root         [mbox-deliver-th]
+  199     2 root         [kworker/1:1H-kblockd]
+  200     2 root         [sbuf-4-4]
+  201     2 root         [sbuf-5-4]
+  202     2 root         [sbuf-5-6]
+  203     2 root         [sbuf-5-21]
+  204     2 root         [sbuf-6-4]
+  205     2 root         [sbuf-6-5]
+  206     2 root         [sbuf-6-6]
+  207     2 root         [sbuf-6-7]
+  208     2 root         [sbuf-6-41]
+  209     2 root         [sblock-5-2]
+  210     2 root         [sblock-5-3]
+  211     2 root         [sblock-5-5]
+  212     2 root         [sipx-5-7]
+  213     2 root         [sipx-5-8]
+  214     2 root         [sipx-5-9]
+  215     2 root         [sipx-5-18]
+  216     2 root         [sipx-5-19]
+  217     2 root         [sipx-5-20]
+  218     2 root         [sipx-5-24]
+  219     2 root         [sipx-5-25]
+  220     2 root         [sipx-5-26]
+  221     2 root         [sipx-5-27]
+  222     2 root         [sipx-5-28]
+  223     2 root         [sipx-5-29]
+  224     2 root         [sipx-5-30]
+  225     2 root         [sipx-5-31]
+  226     2 root         [slog-0-0]
+  227     2 root         [kworker/7:1H-kblockd]
+  231     2 root         [jbd2/sda55-8]
+  232     2 root         [ext4-rsv-conver]
+  233     2 root         [kdmflush]
+  234     2 root         [kdmflush]
+  235     2 root         [kdmflush]
+  236     2 root         [kdmflush]
+  237     2 root         [kdmflush]
+  238     2 root         [kdmflush]
+  239     2 root         [kdmflush]
+  240     2 root         [kdmflush]
+  241     2 root         [kdmflush]
+  242     2 root         [kdmflush]
+  243     2 root         [ext4-rsv-conver]
+  248     2 root         [kworker/5:1H-kblockd]
+  249     2 root         [kworker/0:1H-kblockd]
+  251     1 root         init
+  253     1 root         ueventd
+  269     2 root         [loop0]
+  270     2 root         [ext4-rsv-conver]
+  271     2 root         [loop1]
+  272     2 root         [ext4-rsv-conver]
+  273     2 root         [loop2]
+  274     2 root         [ext4-rsv-conver]
+  275     2 root         [loop3]
+  276     2 root         [ext4-rsv-conver]
+  280     2 root         [kworker/3:1H-kblockd]
+  291     2 root         [carveout_fd]
+  296     1 lmkd         lmkd
+  297     2 root         [psimon]
+  298     1 system       servicemanager
+  299     1 system       hwservicemanager
+  300     1 system       vndservicemanager
+  304     2 root         [VserTestWq]
+  307     1 keystore     keystore2
+  312     1 root         vold
+  363     2 root         [jbd2/sda1-8]
+  364     2 root         [ext4-rsv-conver]
+  368     2 root         [jbd2/sda52-8]
+  369     2 root         [ext4-rsv-conver]
+  372     2 root         [kbase_job_fault]
+  374     2 root         [jbd2/sda51-8]
+  375     2 root         [ext4-rsv-conver]
+  377     1 system       android.system.suspend@1.0-service
+  378     1 system       android.hardware.security.keymint@1.0-unisoc.service
+  381     1 root         vendor.sprd.hardware.boot@1.2-service
+  382     2 root         [irq/29-VSP]
+  389     2 root         [kdmflush]
+  391     2 root         [spi0]
+  392     2 root         [spi3]
+  394     2 root         [gsp-core[0]]
+  395     2 root         [sprd_drm_commit]
+  396     2 root         [sensorhub_daemo]
+  397     2 root         [shub_rd]
+  398     2 root         [shub_rd_nwu]
+  399     2 root         [sprd_pd_driver]
+  400     2 root         [64200000.spi:pm]
+  401     2 root         [charger_manager]
+  404     2 root         [sbuf-5-41]
+  407     2 root         [sbuf-3-4]
+  408     2 root         [sbuf-3-11]
+  409     2 root         [sbuf-3-12]
+  410     2 root         [sbuf-3-5]
+  411     2 root         [WCN_LOOPCHECK_Q]
+  412     2 root         [SPRDBT_RX_QUEUE]
+  413     2 root         [chipone-tddi-wo]
+  414     2 root         [chipone-tddi-es]
+  415     2 root         [irq/94-chipone-]
+  416     2 root         [pmic_wdt_worker]
+  417     2 root         [hang_debug/0]
+  418     2 root         [hang_debug/1]
+  419     2 root         [hang_debug/2]
+  420     2 root         [hang_debug/3]
+  421     2 root         [hang_debug/4]
+  422     2 root         [hang_debug/5]
+  423     2 root         [hang_debug/6]
+  424     2 root         [hang_debug/7]
+  426     2 root         [audio_sblock-1-]
+  427     2 root         [audio_sblock-1-]
+  429     2 root         [sprdwl_work]
+  430     2 root         [RX_THREAD]
+  431     2 root         [RX_NET_QUEUE]
+  432     2 root         [SPRDWL_TX_THREA]
+  434     2 root         [sblock-3-7]
+  439     2 root         [WCN_SIPC_TX_THR]
+  441     2 root         [WCN_SIPC_TX_THR]
+  442     2 root         [WCN_SIPC_TX_THR]
+  443     2 root         [compr drain]
+  444     2 root         [headset_mic]
+  445     2 root         [headset_button]
+  446     2 root         [headset_detect_]
+  447     2 root         [headset_ldetl]
+  448     2 root         [headset_reg_dum]
+  450     2 root         [f2fs_ckpt-254:1]
+  451     2 root         [f2fs_flush-254:]
+  452     2 root         [f2fs_discard-25]
+  453     2 root         [f2fs_gc-254:10]
+  461     1 tombstoned   tombstoned
+  470     2 root         [loop4]
+  471     2 root         [ext4-rsv-conver]
+  472     2 root         [loop5]
+  473     2 root         [ext4-rsv-conver]
+  474     2 root         [loop6]
+  475     2 root         [loop7]
+  476     2 root         [loop8]
+  477     2 root         [ext4-rsv-conver]
+  478     2 root         [ext4-rsv-conver]
+  479     2 root         [ext4-rsv-conver]
+  480     2 root         [loop9]
+  481     2 root         [loop10]
+  482     2 root         [loop11]
+  483     2 root         [ext4-rsv-conver]
+  484     2 root         [ext4-rsv-conver]
+  485     2 root         [loop12]
+  486     2 root         [loop13]
+  487     2 root         [ext4-rsv-conver]
+  488     2 root         [loop14]
+  489     2 root         [ext4-rsv-conver]
+  490     2 root         [ext4-rsv-conver]
+  491     2 root         [ext4-rsv-conver]
+  492     2 root         [loop15]
+  493     2 root         [loop16]
+  494     2 root         [loop17]
+  495     2 root         [ext4-rsv-conver]
+  496     2 root         [ext4-rsv-conver]
+  497     2 root         [loop18]
+  498     2 root         [ext4-rsv-conver]
+  499     2 root         [loop19]
+  500     2 root         [ext4-rsv-conver]
+  501     2 root         [loop20]
+  502     2 root         [ext4-rsv-conver]
+  503     2 root         [loop21]
+  504     2 root         [ext4-rsv-conver]
+  505     2 root         [loop22]
+  506     2 root         [ext4-rsv-conver]
+  507     2 root         [loop23]
+  508     2 root         [ext4-rsv-conver]
+  509     2 root         [loop24]
+  510     2 root         [ext4-rsv-conver]
+  511     2 root         [loop25]
+  512     2 root         [ext4-rsv-conver]
+  513     2 root         [ext4-rsv-conver]
+  530     1 root         magiskd
+  537     1 root         daemon
+  601     1 root         zn-daemon
+  627     1 system       ylog
+  637     1 statsd       statsd
+  641   627 root         ylogw
+  644     1 root         netd
+  648     1 root         zygote64
+  650     1 root         zygote
+  653     1 root         installd
+  655   644 root         iptables-restore
+  656   644 root         ip6tables-restore
+  673     1 system       android.hidl.allocator@1.0-service
+  674     1 audioserver  android.hardware.audio.service
+  675     1 bluetooth    android.hardware.bluetooth@1.1-service.unisoc
+  676     1 cameraserver android.hardware.camera.provider@2.4-service
+  677     1 media        android.hardware.cas@1.2-service
+  678     1 media        android.hardware.drm@1.4-service.clearkey
+  679     1 media        android.hardware.drm@1.4-service.widevine
+  682     1 system       android.hardware.gatekeeper@1.0-service.trusty
+  684     1 system       android.hardware.graphics.allocator@4.0-service
+  685     1 system       android.hardware.graphics.composer@2.1-service
+  687     1 system       android.hardware.health@2.1-service
+  690     1 mediacodec   media.unisoc.codec2
+  692     1 system       android.hardware.sensors@1.0-service
+  693     1 system       android.hardware.usb@1.1-service
+  697     1 wifi         android.hardware.wifi@1.0-service
+  700     1 system       vendor.sprd.hardware.lights-service
+  701     2 root         [irq/91-sprd-sen]
+  702     1 nobody       vendor.sprd.hardware.memtrack-service
+  703     1 system       android.hardware.power.stats-service.example
+  704     1 system       android.hardware.rebootescrow-service.default
+  705     1 root         vendor.unisoc.hardware.power-service
+  706     1 system       vendor.sprd.hardware.ai_engine@1.0-service
+  707     1 audioserver  vendor.sprd.hardware.broadcastradio@2.0-service
+  712     1 system       vendor.sprd.hardware.connmgr@1.0-service
+  713     1 system       vendor.sprd.hardware.cplog_svc@1.0-service
+  715     1 system       vendor.sprd.hardware.enhance@1.0-service
+  718     1 system       vendor.sprd.hardware.face@1.0-service
+  719     1 system       vendor.sprd.hardware.log@1.0-service
+  722     1 system       vendor.sprd.hardware.network@1.0-service
+  724     1 system       vendor.sprd.hardware.oemlock@1.0-service
+  730     1 system       vendor.sprd.hardware.thermal@2.0-service
+  732     1 system       vendor.sprd.hardware.trusty@1.0-service
+  733     1 system       vendor.sprd.hardware.wcn@1.0-service
+  734     1 system       vendor.sprd.hardware.vibrator-service
+  735     1 audioserver  audioserver
+  737     1 credstore    credstore
+  739     1 gpu_service  gpuservice
+  742     1 root         performancemanager
+  750     1 system       surfaceflinger
+  752     1 root         engpc
+  753     1 system       gpsd
+  754     1 system       modem_control
+  757     1 system       sprdstorageproxyd
+  758     1 system       sprdstorageproxyd
+  759     1 system       tee_rpc
+  762     1 system       tsupplicant
+  765     1 radio        urild
+  801     2 root         [kbase_event]
+  825     2 root         [kbase_event]
+  846     1 drm          drmserver
+  852     2 root         [native_hang_det]
+  854     1 nobody       traced_probes
+  855     1 nobody       traced
+  861     1 root         sh
+  863     1 cameraserver cameraserver
+  871     1 incidentd    incidentd
+  873     1 mediaex      media.extractor
+  874     1 media        media.metrics
+  875   861 root         tcpdump
+  878     1 media        mediaserver
+  883     1 root         storaged
+  884     1 wifi         wificond
+  890     1 root         sh
+  893     1 root         ext_data
+  898     1 root         ims_bridged
+  900     1 root         sh
+  906   900 root         ip
+  907   900 root         sh
+  910     1 root         log_service
+  916     1 system       slogmodem
+  923     1 root         sprd_networkcontrol
+  932     1 mediacodec   media.codec
+  940     1 root         charged
+  942     1 root         uniber
+  947     1 system       phasecheckserver
+  949     1 system       refnotify
+  954     1 system       srtd
+  957     1 system       thermald
+  958     1 system       vendor.sprd.hardware.gnss@2.2-service
+  959     1 mediacodec   media.swcodec
+  972     1 system       gatekeeperd
+  988     1 root         update_engine
+ 1001     1 system       connmgr
+ 1003     1 camera       remosaic_daemon
+ 1011     1 system       sprdstorageproxyd
+ 1049     1 root         busybox
+ 1057     1 root         supervisor
+ 1060     1 root         busybox
+ 1080  1057 root         TEESimulator
+ 1102     1 root         sh
+ 1141  1102 root         lspd
+ 1287   648 system       system_server
+ 1293     1 root         cp_diskserver
+ 1295     1 root         zn-zygisk-companion64 zygisk_lsposed
+ 1305     2 root         [imsbr-ctrl[5-3]]
+ 1306     2 root         [imsbr-data[5-2]]
+ 1339     1 root         srmi_proxyd
+ 1698   648 radio        com.android.phone
+ 1806   648 u0_a132      com.android.smspush
+ 1836     2 root         [sblock-3-8]
+ 1837     2 root         [sblock-3-9]
+ 1850   648 webview_zygote webview_zygote
+ 1868   648 network_stack com.android.networkstack.process
+ 1892   648 secure_element com.android.se
+ 1907   648 system       com.sprd.srmi
+ 1924   648 system       com.android.settings
+ 1972     1 wifi         wpa_supplicant
+ 1975   648 u0_a135      android.ext.services
+ 2037     2 root         [kbase_event]
+ 2081   648 u0_a190      com.android.launcher3
+ 2425     1 logd         logd
+ 2428     1 root         sh
+ 2429     1 system       sh
+ 2432  2429 system       logcat
+ 2481  2428 root         logcat
+ 2508     1 root         crond
+ 2509  1060 root         inotifywait
+ 2511  1060 root         busybox
+ 2549     2 root         [loop26]
+ 2705   648 u0_a134      com.android.providers.media.module
+ 2707     1 root         AsoulOpt
+ 2715   648 u0_a164      com.sohu.inputmethod.sogou
+ 2838   648 u0_a77       com.baidu.launcher
+ 2886   648 u0_a180      app.lawnchair
+ 2899   648 u0_a187      app.lawnchair.nightly
+ 2993     2 root         [kbase_event]
+ 3232     2 root         [kbase_event]
+ 3525   650 u0_a68       com.baidu.duershow.dcs
+ 3529     1 root         zn-zygisk-companion32 zygisk_lsposed
+ 3668     2 root         [kbase_event]
+ 4195   648 u0_a151      com.tencent.mobileqq:MSF
+ 4260   650 u0_a94       com.jxw.launcher
+ 4290   650 u0_a94       com.jxw.launcher:remote
+ 4992     1 nobody       xdnsproxy
+ 5488   648 u0_a151      com.tencent.mobileqq:pushservice
+ 5580   648 u0_a157      org.mozilla.firefox
+ 5738   648 u0_a151      com.tencent.mobileqq
+ 6149   648 u0_a70       com.baidu.duershow.media
+ 6553     2 root         [kworker/u16:0-devfreq_workq]
+ 6860     2 root         [dio/dm-10]
+ 7083  1850 u0_i9003     com.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0
+ 7300   648 u0_a150      com.tencent.mm
+ 7647   648 u0_a157      org.mozilla.firefox:crashhelper_disable_art_image_
+ 8328     2 root         [kbase_event]
+ 8845   648 u0_a51       com.android.documentsui
+ 8901   648 u0_a50       android.process.media
+ 8952   648 u0_a150      com.tencent.mm:push
+ 8986     2 root         [kworker/0:0-events]
+ 8990   648 u0_a200      com.jmcomic_next.lyqs
+ 9054     2 root         [kbase_event]
+ 9560     2 root         [kworker/1:1-events]
+ 9753     2 root         [kworker/6:2-events]
+ 9792     2 root         [kworker/2:2-events]
+ 9798     2 root         [kbase_event]
+10022   648 u0_a165      com.omarea.vtools
+10118     1 root         scene-daemon
+10182     2 root         [kbase_event]
+10599   648 u0_a124      com.android.systemui
+10725     2 root         [kbase_event]
+10756     2 root         [kworker/u16:2-events_unbound]
+11221     2 root         [kworker/0:1-events]
+12171     2 root         [kworker/2:0-events]
+12181     2 root         [kworker/6:0-mm_percpu_wq]
+12541     1 mdnsr        mdnsd
+13201     2 root         [kworker/7:1-events]
+13875     2 root         [kworker/6:1-events]
+14199     1 root         apexd
+14252     2 root         [kworker/u17:4-erofs_unzipd]
+14258     2 root         [kworker/u17:5-erofs_unzipd]
+14259     2 root         [kworker/u17:6-kbase_pm_poweroff_wait]
+14354     2 root         [kworker/u16:4-events_unbound]
+14371  1850 u0_i9005     com.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0
+14589     2 root         [kworker/u17:0-sprdwl_work]
+14841   648 u0_a150      com.tencent.mm:xweb_privileged_process_0
+14877   648 u0_i9006     com.tencent.mm:xweb_sandboxed_process_0:com.tencent.xweb.pinus.sdk.process.SandboxedProcessService
+14922     2 root         [kbase_event]
+15047     2 root         [kworker/u16:3]
+15794     2 root         [kworker/7:0-pm]
+15978     2 root         [kworker/1:3-events]
+16073     2 root         [kworker/4:1-events]
+16338     2 root         [kworker/1:0-mm_percpu_wq]
+16988     2 root         [kworker/0:2-events]
+18232   890 root         sleep
+18236 31351 shell        sh
+18238 18236 shell        su
+18240     1 root         magiskd
+18241 18240 root         app_process
+18242   530 root         sh
+18244 18242 root         sh
+18316 18244 root         ps
+20832     2 root         [kbase_event]
+26200     2 root         [kworker/2:1-events]
+26634     2 root         [kworker/u16:1-devfreq_workq]
+26637     2 root         [kworker/7:2-events]
+26753     2 root         [kworker/u17:3-erofs_unzipd]
+27693   648 u0_a77       com.baidu.launcher:remote
+28336     2 root         [kworker/3:0-events]
+28473     2 root         [kworker/3:3-pm]
+28504     2 root         [kworker/5:2-mm_percpu_wq]
+28680     2 root         [kworker/5:3-events]
+29219     2 root         [kworker/4:2-events]
+29269     2 root         [kworker/u17:1-erofs_unzipd]
+29288   648 u0_a189      com.kieronquinn.app.smartspacer
+29592     2 root         [kworker/u17:2-mali_jd]
+30371   648 u0_a163      com.termux
+30430     2 root         [kbase_event]
+30448 30371 u0_a163      zsh
+31351     1 shell        adbd
+31374   648 u0_a149      io.github.vvb2060.magisk
+31431 31374 u0_a149      su
+31441   530 root         libbusybox.so
+31445 31441 root         io.github.vvb2060.magisk:root:0
+32193 31351 shell        abb
+32253   648 system       com.android.keychain
+32267   648 u0_a139      com.android.permissioncontroller
+
+# baidu/duer/pcdn/xray 相关进程
+ 2838   648 u0_a77       com.baidu.launcher
+ 3525   650 u0_a68       com.baidu.duershow.dcs
+ 6149   648 u0_a70       com.baidu.duershow.media
+27693   648 u0_a77       com.baidu.launcher:remote

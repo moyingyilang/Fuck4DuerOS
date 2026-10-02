@@ -1,0 +1,13 @@
+# APK 内嵌 libcyber-pcdn.so 哈希
+# 字段: 载体APK  条目  解压后大小  sha256
+/system/app/DuerShowSwan/DuerShowSwan.apk  lib/arm64-v8a/libcyber-pcdn.so  2794344  191116ace444b5745a39b4773d7f19b6425c2096349dd1887c239775eab3b329
+/system/app/DuerShowMedia/DuerShowMedia.apk  lib/arm64-v8a/libcyber-pcdn.so  2794344  5848922be3fb24237b28eeba0b0390b8467b2ddf72180cbe518e35a7653acb7c
+/system/app/DuerShowLauncher/DuerShowLauncher.apk  lib/arm64-v8a/libcyber-pcdn.so  2794344  5848922be3fb24237b28eeba0b0390b8467b2ddf72180cbe518e35a7653acb7c
+
+# 活动 codePath 处的同名库（UPDATED_SYSTEM_APP 会落在 /data/app）
+com.baidu.launcher  /data/app/~~-rk9btGny9Lu9xW9pJu_dQ==/com.baidu.launcher-3M3jr0A73iFIVZYxqjmb0A==/base.apk!lib/arm64-v8a/libcyber-pcdn.so  2794344  5848922be3fb24237b28eeba0b0390b8467b2ddf72180cbe518e35a7653acb7c
+
+# /system/app 遮蔽状态
+/system/app/DuerShowSwan/lib/arm64/libcyber-pcdn.so  0 bytes
+/system/app/DuerShowMedia/lib/arm64/libcyber-pcdn.so  0 bytes
+/system/app/DuerShowLauncher/lib/arm64/libcyber-pcdn.so  0 bytes

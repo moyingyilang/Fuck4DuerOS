@@ -1,0 +1,13 @@
+# 路径名含 pcdn/xray 的文件
+/system/app/PCDN
+/system/app/DuerShowSwan/lib/arm64/libcyber-pcdn.so
+/system/app/DuerShowMedia/lib/arm64/libcyber-pcdn.so
+/system/app/DuerShowLauncher/lib/arm64/libcyber-pcdn.so
+/data/app/~~WPlaZtJzxb8uk5Q8xrryNg==/com.baidu.duer.superapp-oJ8M9sGUJlzrsznKCFApMQ==/lib/arm/libpcdn-jni.so
+
+# libcyber-pcdn.so 大小（0 表示已被 Magisk 模块遮蔽）
+/system/app/DuerShowSwan/lib/arm64/libcyber-pcdn.so                    0
+/system/app/DuerShowMedia/lib/arm64/libcyber-pcdn.so                   0
+/system/app/DuerShowLauncher/lib/arm64/libcyber-pcdn.so                0
+
+# 已加载的 pcdn/xray 映射（运行中的进程）
