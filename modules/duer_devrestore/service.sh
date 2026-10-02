@@ -82,5 +82,17 @@ if [ "$(settings get global development_settings_enabled 2>/dev/null)" != "1" ];
     log "development_settings_enabled -> 1"
 fi
 
+# ---------- 7. 恢复无线 ADB 监听端口 ----------
+# service.adb.tcp.port 是 service.* 属性，非持久，重启即丢。
+# 日常用无线 adb 的话必须重新设置，否则重启后只剩 USB 通道。
+# 鉴权（ro.adb.secure=1）此时已开启，只有已授权密钥能连上。
+# 不需要无线 adb 的话，删掉这一段即可。
+if [ "$(getprop service.adb.tcp.port)" != "5555" ]; then
+    setprop service.adb.tcp.port 5555
+    sleep 1
+    setprop ctl.restart adbd 2>/dev/null
+    log "service.adb.tcp.port -> 5555（无线 adb 已恢复）"
+fi
+
 log "================ duer_devrestore 完成 ================"
 exit 0
