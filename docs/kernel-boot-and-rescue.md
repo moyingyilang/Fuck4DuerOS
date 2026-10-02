@@ -374,3 +374,91 @@ lcd_size=1612x720
 **注意**：屏幕型号是 `icnl9916`，而之前驱动覆盖比对时设备实际加载的触摸屏模块是
 `chipone_tddi_9916.ko`——两者都是 Chipone/ILITEK 系，命名相近，需注意区分
 （`icnl9916` 是驱动 IC 型号，`chipone-tddi` 是驱动目录名）。
+
+---
+
+# 补充：BROM/FDL 救援通路确认可用（2026-10-02 22:1x）
+
+## 来源
+
+设备所有者在网吧（Windows）用过的一整套展锐刷机工具，存放在本仓库的
+`spd/` 目录（属主是另一应用的 UID，需 root 读取）：
+
+```text
+spd_dump_it_main_248_868b732_x64_Release.zip   13 MB   spd_dump（Windows x64）
+QIKU Download Assistant Setup V3.61.zip        23 MB   奇酷下载助手
+ums9230_Baidu_Qinghe_V20(1)/(2).zip           1.4 MB   本机专用包
+ums9230_universal_unlock_UFS.zip              1.0 MB   通用解锁（UFS）
+ums9230_universal_unlock_EMMC.zip             1.1 MB   通用解锁（EMMC）
+展讯公钥签名解锁BL_by酷安@某贼.zip              9.8 MB
+fdl1_spl_pgpt_tools_win64only_260909.zip       114 KB
+紫光驱动_R4.21.3201.zip / QIKUDriver.zip        驱动
+```
+
+本机专用包 `ums9230_Baidu_Qinghe_V20(1).zip` 内含：
+
+```text
+fdl1-dl.bin                        FDL1 loader（下载用）
+fdl1-sign.bin
+fdl2-dl.bin                        FDL2 loader
+fdl2-sign.bin
+fdl2-cboot.bin                     FDL2（cboot 角色）
+custom_exec_no_verify_65015f08.bin 绕过签名校验的 payload
+misc-wipe.bin
+unlock_autopatch_9230.bat          解锁脚本
+spd_dump.exe                       Windows x64
+gen_spl-unlock.exe / chsize.exe / Channel9.dll
+Channel.ini
+```
+
+## 关键：解锁脚本揭示了完整流程
+
+`unlock_autopatch_9230.bat` 核心命令：
+
+```bat
+spd_dump --wait 300 exec_addr 0x65015f08 ^
+         fdl fdl1-dl.bin 0x65000800 ^
+         fdl fdl2-dl.bin 0x9efffe00 ^
+         exec r splloader r uboot e splloader e splloader_bak reset
+```
+
+参数含义：
+
+| 参数 | 含义 |
+| --- | --- |
+| `--wait 300` | 等待设备进入 BROM/下载模式 |
+| `exec_addr 0x65015f08` | BROM 漏洞利用地址（CVE-2022-38694） |
+| `fdl fdl1-dl.bin 0x65000800` | 加载 FDL1 到该地址 |
+| `fdl fdl2-dl.bin 0x9efffe00` | 加载 FDL2 到该地址 |
+| `r <part>` / `w <part> <file>` | 读/写任意分区 |
+| `e <part>` | 擦除分区 |
+| `read_part miscdata 8192 64 m.bin` | 读 miscdata 偏移 8192 的 64 字节 |
+| `reset` | 重启 |
+
+## 由此确认的事实
+
+1. **BROM/FDL 通路存在且已验证**——这是内核刷挂后唯一的兜底，
+   而且它**不依赖 uboot、不依赖 fastboot、不依赖 Android**。
+   只要 SoC 的 BootROM 完好，就一定能进。
+
+2. **FDL loader 与主机架构无关**（跑在设备 SoC 上），
+   所以这份 `fdl1-dl.bin` / `fdl2-dl.bin` 可以直接复用；
+   需要替换的只是主机端的 `spd_dump`（Windows x64 → Android arm64）。
+
+3. **`miscdata` 偏移 8192（0x2000）处是 64 字节的解锁状态字段**，
+   与脚本注释一致：
+
+   > check unlock (if get 64 zeros, locked; if 32 string + 16 hash + 16 hash, unlocked)
+
+   实测该处为非零数据，与设备 `androidboot.vbmeta.device_state=unlocked` 相符。
+
+4. **刷写手段有两条**：
+   - Android 内 root + `dd` 直接写块设备（`boot_a` 已验证可写）
+   - BROM/FDL（`spd_dump`）
+
+## 待办
+
+- [ ] 在主机（Android arm64）上准备可用的 `spd_dump`
+      （参考 `Seuj09/Spd_dump_termux` 的 root 路线：chroot Ubuntu + arm64 二进制）
+- [ ] 用本机专用包的 FDL loader 验证能进入并识别设备
+- [ ] 验证通过后，才考虑刷入自编译内核
