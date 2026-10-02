@@ -42,54 +42,106 @@
 
 ## 🚀 快速开始
 
-### 1. 侦察
+### 0. 侦察
 
 ```bash
-su -c 'sh scripts/check.sh'
+adb shell "su -c 'sh scripts/check.sh'"      # 只读，报告当前状态
+./scripts/collect_via_adb.sh                 # 完整取证落盘（可选）
 ```
 
-确认输出里有 com.baidu.pcdn 等组件。
-
-2. 执行
+### 1. 净化 PCDN / 监控组件
 
 ```bash
-su -c 'sh scripts/install.sh'
-su -c 'reboot'
+adb shell "su -c 'sh scripts/install.sh'"    # 生成并安装 duer_cleanup
+adb shell "su -c 'reboot'"
 ```
 
-3. 验证
-
-重启后：
+### 2. 系统优化（可逆）
 
 ```bash
-su -c 'ps -A | grep -iE "pcdn|duer"'
-su -c 'cat /system/etc/hosts | grep baidu'
+./scripts/bench_via_adb.sh before            # 采集基线
+./scripts/optimize_via_adb.sh                # 应用优化
+./scripts/install_module.sh duer_optimize    # 装成开机自动
+./scripts/bench_via_adb.sh after             # 采集结果
+python3 scripts/compare_bench.py \
+  evidence/device-xd-see00-2301/optimize/before \
+  evidence/device-xd-see00-2301/optimize/after
 ```
 
-4. 后悔了？
+详见 [系统优化记录](docs/optimization.md)。最大的单项收益是关掉百度持久化日志，
+实测从 **约 1.09 GB/天** 的持续闪存写入降到 **0**。
+
+### 3. 恢复被 ROM 去掉的开发能力
 
 ```bash
-su -c 'sh scripts/rollback.sh'
-su -c 'reboot'
+./scripts/install_module.sh duer_devrestore
+```
+
+恢复 ADB 授权（`ro.adb.secure=1`）与开发者选项、系统跟踪、导航栏、多用户等页面。
+详见 [恢复被定制 ROM 去掉的开发能力](docs/restore-removed-pages.md)。
+
+### 后悔了？
+
+```bash
+adb shell "su -c 'sh scripts/rollback.sh'"   # 回滚净化
+./scripts/optimize_via_adb.sh revert         # 回滚优化
+adb shell "su -c 'rm -rf /data/adb/modules/duer_optimize /data/adb/modules/duer_devrestore'"
 ```
 
 ---
 
-🔍 检测原理
+## 🧩 模块与脚本
 
-组件 检测方式 处理方式
-PCDN ps -A \| grep pcdn 禁用 + 库文件覆盖
-Duerguard pm list packages -d 禁用
-GoodFather pm list packages -d 禁用
-通讯劫持 dumpsys activity services 组件级禁用
-上报域名 cat /system/etc/hosts hosts 屏蔽
+### Magisk 模块
+
+| 模块 | 作用 |
+| --- | --- |
+| `modules/duer_cleanup` | 净化：`.replace` 掉 PCDN/Duerguard/GoodFather 等，hosts 屏蔽上报域名，禁用通讯劫持组件 |
+| `modules/duer_optimize` | 优化：关闭百度持久化日志、UFS IO / 网络 / VM 调优、动画 0.5x |
+| `modules/duer_devrestore` | 恢复：`ro.adb.secure=1`（ADB 授权）、重新启用被 ROM 禁用的系统页面 |
+
+安装：`./scripts/install_module.sh <模块目录名>`
+
+### 脚本
+
+| 脚本 | 位置 | 作用 |
+| --- | --- | --- |
+| `check.sh` | 设备端 | 只读侦察，含 PCDN 库覆盖有效性判定 |
+| `collect_evidence.sh` / `collect_via_adb.sh` | 设备 / 主机 | 完整取证采集（隐私已处理） |
+| `bench.sh` / `bench_via_adb.sh` | 设备 / 主机 | 优化前后基线测量 |
+| `optimize.sh` / `revert_optimize.sh` | 设备端 | 应用 / 回滚系统优化 |
+| `restore_dev_pages.sh` | 设备端 | 重新启用被 ROM 禁用的系统页面 |
+| `adb_authorize.sh` | 设备端 | 管理 ADB 授权公钥（无线场景用） |
+| `compare_bench.py` | 主机 | 对比两份基线快照 |
+| `parse_dexdump.py` | 主机 | 把 dexdump 输出解析成类/方法表 |
 
 ---
 
-📚 文档
+## 🔍 检测原理
+
+| 组件 | 检测方式 | 处理方式 |
+| --- | --- | --- |
+| PCDN | `ps -A \| grep pcdn` | 禁用 + 库文件覆盖（注意下方说明） |
+| Duerguard | `pm list packages -d` | 禁用 |
+| GoodFather | `pm list packages -d` | 禁用 |
+| 通讯劫持 | `dumpsys activity services` | 组件级禁用 |
+| 上报域名 | `cat /system/etc/hosts` | hosts 屏蔽 |
+| 百度持久化日志 | `getprop init.svc.logcat_log` | `ctl.stop` 停服务 |
+| 隐藏框架类 | `dexdump framework.jar/services.jar` | 只取证，不修改 |
+
+> ⚠️ **库文件覆盖的局限**：`libcyber-pcdn.so` 同时打包在 APK **内部**，而
+> `com.baidu.launcher` 是 `UPDATED_SYSTEM_APP`（代码在 `/data/app`，native 库
+> 直接从 APK 加载），因此对 `/system/app/*/lib/` 做 0 字节覆盖对它**无效**。
+> `check.sh` 会按活动 `codePath` 实测并明确报告。详见技术取证报告 13 节。
+
+---
+
+## 📚 文档
 
 - [技术取证报告](docs/technical-report.md)
 - [系统框架层取证（framework.jar / services.jar）](docs/framework-hooks.md)
+- [系统优化记录](docs/optimization.md)
+- [恢复被定制 ROM 去掉的开发能力](docs/restore-removed-pages.md)
 - [法律依据](docs/legal-basis.md)
 - [给普通人的说明](docs/plain-language.md)
 
