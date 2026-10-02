@@ -420,3 +420,151 @@ services_smali/ services.jar 反编译源码
 报告结束
 
 本报告所载内容均基于设备端实际取证，数据可复现、路径可验证、代码可审计。
+
+---
+
+# 补充取证（2026-10-02，第二次现场取证）
+
+本节是在设备已装 `duer_cleanup` 模块的状态下重新取证得到的结论，
+用于修正、补充前文。原始数据见：
+
+- `evidence/device-xd-see00-2301/session-2026-10-02/`
+- `evidence/device-xd-see00-2301/framework/`
+- `docs/framework-hooks.md`
+
+---
+
+## 12. 系统框架层：107 个非 AOSP 类
+
+前文第 5 节只列出了 4 个 `com.android.server.baidu` 类。这次把
+`framework.jar` 与 `services.jar` 的 `classes*.dex` 全部 `dexdump` 后，
+实际数量是：
+
+| 组件 | 类数 | 方法数 |
+| --- | --- | --- |
+| `/system/framework/framework.jar` | 62 | 722 |
+| `/system/framework/services.jar` | 45 | 386 |
+| **合计** | **107** | **1108** |
+
+其中此前完全未记录的高价值发现：
+
+| 类 | 关键方法 | 含义 |
+| --- | --- | --- |
+| `com.baidu.am.ActivityRedirection` | `isSettingsAction`、`redirectToDefaultSettingAction`、`replacePendingIntent` | 重定向「设置」Intent；替换通知里的 PendingIntent |
+| `com.baidu.pm.PermissionController` | `shouldGrantSignaturePermission`、`shouldNotShowConfirmationDialog`、`revokePkgFlagsIfNeeded` | 对白名单包可跳过确认框直接授权 |
+| `android.app.baidu.SharedPreferenceHack` | `onGetBoolean`、`onPutString` | 框架层拦截 SharedPreferences 读写 |
+| `android.app.baidu.DuerShowInputEventReceiver` | `pilferPointers`、`monitorGestureInput` | 夺取触摸手势 |
+| `android.os.baidu.IDuerService` | 63 个方法，含 `wipe`、`takeScreenshot`、`readWifiPassWd`、`sendUibcInputEvent`、`setRuntimePermissions` | 私有提权接口 |
+| `com.baidu.monitors.CameraUseStatusMonitor` / `MicUseStatusMonitor` | `getCameraUseApps` / `getMicUseApps` | 跨进程查询摄像头/麦克风使用者 |
+| `com.baidu.framework.statistics.*` | `BroadcastReporter`、`DuerCpuTracker`、`DuerLaunchTimeReporter`、`ThirdAppDownloadEvent` | framework 内部埋点，广播 action `com.baidu.framework.STATISTICS_ACTION` |
+
+完整类表与方法签名见 `docs/framework-hooks.md`。
+
+---
+
+## 13. PCDN 库的真实载体：模块存在覆盖盲区
+
+这是本次取证最重要的修正。
+
+### 13.1 `libcyber-pcdn.so` 同时存在于 APK 内部
+
+前文 3.2 节的说法是「删除独立 APK 后，其他三个系统应用仍可加载
+libcyber-pcdn.so」。实测进一步发现：**该库不仅被解压到 `lib/arm64/` 目录，
+还打包在 APK 自身的 `lib/arm64-v8a/` 里**：
+
+| 载体 APK | 条目 | 大小 | sha256 |
+| --- | --- | --- | --- |
+| `/system/app/DuerShowSwan/DuerShowSwan.apk` | `lib/arm64-v8a/libcyber-pcdn.so` | 2794344 | `191116ace444b5745a39b4773d7f19b6425c2096349dd1887c239775eab3b329` |
+| `/system/app/DuerShowMedia/DuerShowMedia.apk` | `lib/arm64-v8a/libcyber-pcdn.so` | 2794344 | `5848922be3fb24237b28eeba0b0390b8467b2ddf72180cbe518e35a7653acb7c` |
+| `/system/app/DuerShowLauncher/DuerShowLauncher.apk` | `lib/arm64-v8a/libcyber-pcdn.so` | 2794344 | `5848922be3fb24237b28eeba0b0390b8467b2ddf72180cbe518e35a7653acb7c` |
+
+`DuerShowSwan.apk` 的归属包是 `com.baidu.atomkit`；
+`DuerShowMedia.apk` 是 `com.baidu.duershow.media`；
+`DuerShowLauncher.apk` 是 `com.baidu.launcher`。
+
+### 13.2 启动器实际运行在 `/data/app`
+
+```
+com.baidu.launcher
+  codePath=/data/app/~~-rk9btGny9Lu9xW9pJu_dQ==/com.baidu.launcher-3M3jr0A73iFIVZYxqjmb0A==
+  legacyNativeLibraryDir=/data/app/.../lib
+  primaryCpuAbi=arm64-v8a
+  flags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA UPDATED_SYSTEM_APP LARGE_HEAP ]
+```
+
+它是 `UPDATED_SYSTEM_APP`——OTA 更新后代码实际在 `/data/app`，
+而且它的 `lib/arm64/` 目录是**空的**（native 库不落地，直接从 APK 加载）。
+
+因此：
+
+```
+被模块遮蔽的路径：/system/app/DuerShowLauncher/lib/arm64/libcyber-pcdn.so  → 0 字节
+真正被加载的路径：/data/app/.../com.baidu.launcher-.../base.apk!lib/arm64-v8a/libcyber-pcdn.so
+                  → 2794344 字节，sha256 5848922be3fb...（与 /system 里那份完全相同）
+```
+
+**结论：现有 `duer_cleanup` 模块对 `com.baidu.launcher` 的 PCDN 库覆盖无效。**
+`DuerShowMedia` / `com.baidu.atomkit` 因为 native 库确实解压到
+`/system/app/*/lib/arm64/`，遮蔽是有效的。
+
+### 13.3 另一个载体：`libpcdn-jni.so`
+
+```
+/data/app/~~WPlaZtJzxb8uk5Q8xrryNg==/com.baidu.duer.superapp-oJ8M9sGUJlzrsznKCFApMQ==/lib/arm/libpcdn-jni.so
+```
+
+`com.baidu.duer.superapp` 是**用户空间应用**（非系统预置），
+同样携带 PCDN 动态库。前文的「4 个载体」需要更新为至少 6 个。
+
+### 13.4 库的技术特征
+
+对 `DuerShowSwan.apk` 内嵌的 `libcyber-pcdn.so` 做 `strings`，可直接看到
+百度金矿（BJSDK）PCDN 的实现痕迹：
+
+```
+NDK_PCDN / PCDNVOD
+/sdcard/Android/data/com.baidu.haokan/PCDNSDK
+/sdcard/baidu/PCDNSDK
+[BJSDK]BJSdkManager::Close return. Report pcdn download info. |...|
+[BJSDK]Report_RealtimeTraffic. |Read(...)|DH_Down_Total(...)|
+        DH_Down_P2PTasks(...)|FreeCDN_Percentage_current/total(...)|
+        P2P_Percentage_current/total(...)|DP_Up(...)|DP_Down(...)|
+        Reused_Tasks(...)|Reuse_Ratio(...)|
+```
+
+`DP_Up`（上行流量）、`P2P_Percentage`、`Reuse_Ratio`、`FreeCDN_Percentage`
+这几项直接证明该库具备**向他人分发内容的上行能力**，
+并且会对上行/复用比例做实时统计。
+
+### 13.5 模块应有的修正方向
+
+1. 遮蔽目标必须跟随 `pm path` 解析出的**活动 codePath**，而不是写死 `/system/app`。
+2. 对 `UPDATED_SYSTEM_APP`，`/data/app` 里的 `base.apk` 内嵌库无法用
+   挂载空文件的方式处理，需要替换整个 APK 或改用链接器层面的拦截。
+3. `check.sh` 已加入对应检测项，运行后会明确报告「模块覆盖是否有效」。
+
+---
+
+## 14. 处置后的实测状态（2026-10-02）
+
+| 项目 | 状态 |
+| --- | --- |
+| `com.baidu.pcdn` 进程 | 不存在 |
+| `libcyber-pcdn.so` 加载映射 | 无（`/proc/*/maps` 未命中） |
+| `/system/app/PCDN/` | 已被 `.replace` 置空 |
+| `/system/app/*/lib/arm64/libcyber-pcdn.so` | 0 字节（Swan / Media / Launcher 三处） |
+| hosts 屏蔽 | 生效（17 条百度域名） |
+| 已禁用包 | `com.goodfather.textbook.pad`、`com.baidu.duer.appstore`、`com.baidu.atomkit`、`com.baidu.duer.aieye.image.preprocessing`、`com.baidu.duer.aieye.correction` |
+| 残留风险 | `com.baidu.launcher` 的 APK 内嵌 PCDN 库仍完整（见 13.2） |
+
+同时仍在运行的百度进程：
+
+```
+com.baidu.launcher, com.baidu.launcher:remote
+com.baidu.duershow.dcs
+com.baidu.duershow.media
+```
+
+---
+
+报告补充结束

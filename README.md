@@ -88,9 +88,10 @@ GoodFather pm list packages -d 禁用
 
 📚 文档
 
-· 技术取证报告
-· 法律依据
-· 给普通人的说明
+- [技术取证报告](docs/technical-report.md)
+- [系统框架层取证（framework.jar / services.jar）](docs/framework-hooks.md)
+- [法律依据](docs/legal-basis.md)
+- [给普通人的说明](docs/plain-language.md)
 
 ---
 
