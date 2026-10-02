@@ -462,3 +462,86 @@ spd_dump --wait 300 exec_addr 0x65015f08 ^
       （参考 `Seuj09/Spd_dump_termux` 的 root 路线：chroot Ubuntu + arm64 二进制）
 - [ ] 用本机专用包的 FDL loader 验证能进入并识别设备
 - [ ] 验证通过后，才考虑刷入自编译内核
+
+---
+
+# 补充：BROM 实机联调记录（2026-10-02 22:06-22:11）
+
+## 环境与准备
+
+**主机**：Redmi（Android 15 + Magisk/KernelSU root），运 `spd_dump`。
+**目标**：小度设备，进入 **BROM 模式**（`1782:4d00`）。
+
+关键前提（都是本次踩出来的）：
+
+1. `spd_dump` 必须在**主机**上运行。用 `adb shell` 执行会跑到**目标机**上，
+   而目标机的 USB 总线上没有待刷的设备——必然失败。
+   （`adb shell 'su -c ...'` 在目标机执行；`su -c ...` 才在主机的本地 shell 执行。）
+2. 非 root 运行会得到 `libusb_init failed: LIBUSB_ERROR_OTHER`
+   （`/dev/bus/usb/*` 属主 `root:usb`）。
+3. USB 节点权限需放开：`chmod 666 /dev/bus/usb/001/<devnum>`。
+
+## 目标进入 BROM 后的枚举特征
+
+```text
+Bus 001 Device 0xx: ID 1782:4d00
+  bcdDevice   0202
+  speed       480          (USB 2.0 High Speed)
+  bDeviceClass/SubClass/Protocol = 00/00/00
+  bNumInterfaces   1
+  Interface 0: class=ff sub=00 proto=00
+```
+
+设备会在 BROM 里反复重新枚举（实测 devnum 从 065 → 069 → 072 自行变化），
+**每次失败尝试都会污染 BROM 的 USB 状态**，因此「全新一次枚举」的成功率最高。
+
+## 联调结果
+
+最完整的一次交互（`--kickto 2`，设备刚重新枚举）：
+
+```text
+ver:229, sha1:ad0ce43b210ebd0e0ffc4e436b0f350922304a3f
+Waiting for boot_diag/cali_diag/dl_diag connection (240s)
+libusb_control_transfer ok            ← USB 控制传输成功
+CHECK_BAUD bootrom
+BSL_REP_VER: "SPRD3\0"                ← BootROM 应答版本号
+CMD_CONNECT bootrom                   ← BROM 连接建立
+current exec_addr is 0x65015f08       ← 开始发送 exploit payload
+usb_send failed : LIBUSB_ERROR_TIMEOUT
+```
+
+各变体的结果：
+
+| 命令 | 结果 |
+| --- | --- |
+| 无 `--kickto` | `libusb_control_transfer failed: LIBUSB_ERROR_IO` |
+| `--kickto 2`，首次枚举 | ✅ 握手 → `BSL_REP_VER: SPRD3` → `CMD_CONNECT` → 发 payload 超时 |
+| `--kickto 2`，后续 | ✅ 握手 → `CMD_CONNECT` → `usb_recv failed: LIBUSB_ERROR_IO` |
+| `--kickto 2`，第 3 次 | `kick reboot timeout` / `unexpected response (0x008b)` |
+| `--kickto 2` + 不用 exec_addr | ✅ `CMD_CONNECT` → `usb_recv failed` |
+| `--kickto 2` + sign 版 loader | ✅ `CMD_CONNECT` → `usb_send failed: TIMEOUT` |
+
+**规律：`CMD_CONNECT bootrom` 总是能成功，但紧接着的 USB 数据收发必失败。**
+
+⇒ BROM 协议层是通的，卡在**数据传输**阶段。
+
+## 尚未排除的原因
+
+1. **主机 USB 栈**：Redmi 的 xHCI + Android USB 子系统对 BROM 的
+   传输模式（控制 + 批量混合）可能支持不佳。
+   验证方法：换一台 PC/Linux 主机，用同一份 musl 静态二进制
+   （x86_64 版同样可从 nightly.link 下载）。
+2. **SELinux**：主机为 `Enforcing`，root 上下文 `u:r:ksu:s0`，
+   可能限制 usbfs 的某些 ioctl（adb 走 bulk 能通，BROM 的 control 路径未必）。
+3. **`--kickto 2` 的副作用**：它会触发一次 kick reboot；
+   上游 README 也注明「并非所有设备都支持 mode 2」。
+   而设备所有者的 `unlock_autopatch_9230.bat` **原本就没有用 `--kickto`**
+   ——那是在 Windows 上用 QIKU 驱动跑的，驱动层可能代劳了模式切换。
+4. **payload 与 BROM 版本匹配性**未验证。
+
+## 结论
+
+- ✅ **aarch64 静态 `spd_dump` 在 Android 上完全可用**（二进制层面已解决）
+- ✅ **BROM 握手可复现成功**（`CMD_CONNECT bootrom`）
+- ❌ 数据收发阶段失败，救援链路尚未打通
+- 下一步优先验证「换主机」与「Windows 驱动 vs libusb」这两条
