@@ -67,55 +67,156 @@ HOME=/tmp/fakehome adb -P 5038 connect <设备IP>:5555
 # 结果：连接挂起、不进 devices 列表 —— 说明 adbd 在等授权（修复前会被直接放行）
 ```
 
-### 1.4 一个必须知道的前提：弹窗只在插 USB 线时出现
+### 1.4 弹窗为什么在无线下不出现（实测）
 
-`UsbDebuggingActivity` 在没有 USB 连接时会**立刻 `finish()`**（AOSP 里注册了
-`UsbDisconnectedReceiver`，收到 `USB_STATE` 且 `connected=false` 就退出）。
+这一节是踩了很多次坑之后才搞清楚的，记录完整结论，避免后人重复。
 
-实测：设备 `kernel_state=DISCONNECTED`、`connected=false`，此时手动拉起该 Activity，
-即使传入**真实合法的 RSA 公钥**，0.5 秒内也会自行退出：
+**（1）`UsbDebuggingActivity` 一直存在，也**没有**被禁用。**
+起初用 `strings` 扫 SystemUI 的 `AndroidManifest.xml` 没找到它，差点得出
+"ROM 把界面删了"的结论；换 `aapt2` 精确解析后发现组件一直在：
 
 ```bash
-am start -n com.android.systemui/.usb.UsbDebuggingActivity \
-  --es key "<adbkey.pub 的内容>" --esa packages com.example
-dumpsys activity activities | grep -c UsbDebugging      # => 0
+aapt2 dump xmltree --file AndroidManifest.xml SystemUI.apk | grep -i usb
+#   com.android.systemui.usb.UsbDebuggingActivity
+#   com.android.systemui.UsbDebuggingActivityAlias  (targetActivity 同上)
+#   com.android.systemui.usb.UsbDebuggingSecondaryUserActivity
 ```
 
-所以：
+> `strings` 对二进制 AXML 会漏。**检查 manifest 必须用 aapt2。**
 
-| 场景 | 行为 |
+**（2）它是非导出组件，只有 `system_server` 能拉起。**
+试图用 `am start` 手动验证时，拿到的是完整堆栈：
+
+```
+SecurityException: Permission Denial: starting Intent {
+  cmp=com.android.systemui/.usb.UsbDebuggingActivity } from null (pid=..., uid=2000)
+  not exported from uid 10124
+    at ActivityTaskSupervisor.checkStartAnyActivityPermission
+```
+
+也就是说：**任何用 `am start` 手动测试"弹窗出没出来"的尝试都不可能成功**，
+这个界面只接受系统进程的启动请求。
+
+**（3）TCP / 无线通道根本不走授权确认。**
+把手机连上 USB、打开 USB ADB 后，用另一把全新密钥（独立 adb server、独立端口）
+发起无线连接，adbd 直接返回：
+
+```
+failed to authenticate to <已隐去的内网地址>:5555
+```
+
+**没有弹窗、也不给确认机会**。原因是做确认的 `UsbDebuggingManager` 属于
+`UsbDeviceManager`，它服务的是 **USB 传输**。
+
+| 通道 | 陌生密钥的行为 |
 | --- | --- |
-| **插 USB 线**连接新电脑 | 正常弹出「允许 USB 调试吗？」，这和原生 Android 一致 |
-| **纯无线**连接新电脑 | 弹窗无法驻留；连接会一直挂起未授权 |
+| **USB** | 由 `system_server` 拉起 `UsbDebuggingActivity`，弹窗授权（原生行为） |
+| **TCP / 无线** | 直接 `failed to authenticate`，无弹窗 |
 
-这是 AOSP 的设计，不是这台 ROM 特有的问题。
+**（4）弹窗的额外参数要求**（反汇编 `onCreate` 得到）：
 
-### 1.5 无线场景怎么授权
-
-既然弹窗只在插线时可用，纯无线就预置公钥：
-
-```bash
-# 主机端取公钥
-cat ~/.android/adbkey.pub
-
-# 设备端（需 root）写入
-su -c 'sh /data/local/tmp/adb_authorize.sh add "<上面那行的完整内容>"'
-su -c 'setprop ctl.restart adbd'
+```
+getStringExtra("fingerprints")  → 为 null 则直接 finish()
+getStringExtra("key")           → 为 null 则直接 finish()
 ```
 
-`scripts/adb_authorize.sh` 还支持：
-- `list` —— 列出已授权公钥（显示 sha256 前 16 位指纹，便于辨认）
-- `remove <指纹前缀>` —— 删除某一把（自动备份原文件）
-- `backup` / `restore` —— 备份与恢复 `/data/misc/adb/adb_keys`
+框架会同时传 `key` 和 `fingerprints`；只传 `key` 会走"参数不全→立刻退出"分支。
 
-> ⚠️ **风险提示**：恢复 `ro.adb.secure=1` 之后，未被授权的电脑必须**插线**才能授权。
-> 升级前请确认至少有一台电脑的密钥已在 `adb_keys` 里（或设备上有本地 root 终端兜底），
-> 否则可能一时无法用 adb。要退回原状，移除模块并重启即可
-> （`ro.adb.secure` 会由 ROM 的 build.prop 还原为 0）。
+**（5）结论与可用路径：**
+
+- 修复 `ro.adb.secure=1` 是恢复授权机制的关键（见 1.3），也是唯一被 ROM 改掉的地方；
+- **要授权新电脑，用 USB 线连**，弹窗会正常出现（标准 Android 行为）；
+- 只有无线可用时，用 `scripts/adb_authorize.sh` 直接写入公钥；
+- 无线场景下，未被授权的密钥会被直接拒绝，这是预期行为，不是故障。
+
+### 1.5 顺带把 USB 调试开关打开
+
+ROM 里 `settings get global adb_enabled` 是 `0`——USB 插上电脑连 adb 接口都不会出现，
+自然永远走不到授权那一步。模块会把它置 1，系统随即把 USB 功能切换为 `mtp,adb`：
+
+```
+adb_enabled   = 1
+sys.usb.config = mtp,adb
+```
+
+### 1.6 一个主机侧的小坑（如果你也用 Termux 当 adb 主机）
+
+在 Android 手机上跑 adb 去连另一台手机时，adb 会读不到 USB 设备：
+`/dev/bus/usb/001/00X` 属主是 `root:usb`，而 Termux 应用不在 `usb` 组，
+且 SELinux 也拦 `untrusted_app` 访问该节点。两个办法：
+
+```bash
+# 办法一：放开节点权限（每次重新枚举后 devnum 会变）
+su -c 'chmod 666 /dev/bus/usb/001/008'
+
+# 办法二：以 root 起 adb server（顺带绕开 SELinux）
+su -c 'mkdir -p /data/local/tmp/adbroot/.android'
+su -c 'cp ~/.android/adbkey* /data/local/tmp/adbroot/.android/'
+su -c 'HOME=/data/local/tmp/adbroot adb start-server'
+```
+
+注意 root 的 `HOME` 是 `/`（只读），直接 `su -c adb start-server` 会因
+`Cannot mkdir '//.android'` 而崩，必须给它一个可写的 `HOME`。
 
 ---
 
 ## 2. 被禁用的系统页面
+
+### 2.0 开发者选项：页面能开，但一开就崩（ROM 的策略缺陷）
+
+这是本次最费周折的一处，根因和"页面被禁用"完全是两码事。
+
+**现象**：把开发者选项页面重新启用后，一打开就 `设置已停止运行`：
+
+```
+FATAL EXCEPTION: main
+Process: com.android.settings
+java.lang.RuntimeException: Unable to resume activity {...SubSettings}:
+  java.lang.RuntimeException: failed to set system property
+    at android.os.SystemProperties.native_set
+    at android.os.SystemProperties.set
+    at AbstractLogpersistPreferenceController.updateLogpersistValues:179
+    at LogPersistPreferenceController.updateState:57
+    at DashboardFragment.updatePreferenceStates / onResume
+```
+
+**根因**（`dmesg` 里的 avc 记录写得非常明确）：
+
+```
+avc: denied { set } for property=logd.logpersistd
+  scontext=u:r:system_app:s0
+  tcontext=u:object_r:logpersistd_logging_prop:s0
+  tclass=property_service permissive=0
+```
+
+Settings 以 `system_app` 域运行，打开开发者选项时要执行
+`SystemProperties.set("logd.logpersistd", ...)`，但**这台 ROM 的 SELinux 策略里
+没有 `system_app` 对 `logpersistd_logging_prop` 的 `set` 许可**，属性设置抛异常，
+整个 Settings 进程随之崩溃。
+
+因为 ROM 把开发者选项整页禁用着，这个坑一直没人踩到；一旦把页面放出来就必崩。
+
+**处置**：模块用 `sepolicy.rule` 补上两条**最小范围**的许可
+（只针对 `logpersistd_logging_prop` 这一个属性类型）：
+
+```
+allow system_app logpersistd_logging_prop property_service set
+allow system_app logpersistd_logging_prop file { open read }
+```
+
+Magisk 在开机加载策略时会自动应用模块里的 `sepolicy.rule`；
+`service.sh` 里还做了一次运行时兜底，所以**装完模块不重启也能用**。
+
+**验证**：
+
+```
+mResumedActivity: com.android.settings/.Settings$DevelopmentSettingsDashboardActivity
+崩溃次数: 0
+```
+
+> 排错过程记录：中途我先怀疑是属性未定义（走 `default_prop`）而打错了目标类型，
+> 也怀疑过 `UsbDisconnectedReceiver`；两者都被实测否定。
+> **`dmesg` 里的 `avc: denied` 才是最终判据**，不要靠推测。
 
 ### 2.1 来源
 

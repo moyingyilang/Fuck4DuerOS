@@ -48,7 +48,29 @@ for c in $COMPONENTS; do
     fi
 done
 
-# ---------- 3. 开发者选项总开关 ----------
+# ---------- 3. SELinux 策略补丁（不重启也生效） ----------
+# Magisk 在开机加载策略时会自动应用 sepolicy.rule；
+# 这里再做一次运行时兜底，这样装完模块不用重启也能打开开发者选项。
+MAGISKPOLICY=/data/adb/magisk/magiskpolicy
+if [ -x "$MAGISKPOLICY" ] && [ -f "$MODDIR/sepolicy.rule" ]; then
+    while IFS= read -r line; do
+        case "$line" in
+            ""|"#"*) continue ;;
+        esac
+        "$MAGISKPOLICY" --live "$line" 2>/dev/null && log "sepolicy: $line"
+    done < "$MODDIR/sepolicy.rule"
+fi
+
+# ---------- 4. USB 调试开关 ----------
+# ROM 里 adb_enabled=0，USB 插上电脑也不会出现 adb 接口，
+# 也就永远走不到授权弹窗那一步。这里把它打开。
+# （USB 功能本身由系统按 adb_enabled 自动切换，脚本不强行写 sys.usb.config）
+if [ "$(settings get global adb_enabled 2>/dev/null)" != "1" ]; then
+    settings put global adb_enabled 1
+    log "adb_enabled -> 1"
+fi
+
+# ---------- 5. 开发者选项总开关 ----------
 if [ "$(settings get global development_settings_enabled 2>/dev/null)" != "1" ]; then
     settings put global development_settings_enabled 1
     log "development_settings_enabled -> 1"

@@ -1,0 +1,25 @@
+# DuerOS DevRestore - SELinux 策略补丁
+#
+# 背景：这台 ROM 的策略里缺了 system_app 对 logpersistd_logging_prop 的权限。
+#
+#   avc: denied { set } for property=logd.logpersistd
+#     scontext=u:r:system_app:s0
+#     tcontext=u:object_r:logpersistd_logging_prop:s0
+#     tclass=property_service permissive=0
+#
+# Settings（以 system_app 域运行）在打开「开发者选项」时会执行
+#   AbstractLogpersistPreferenceController.updateLogpersistValues()
+# 里面调用 SystemProperties.set("logd.logpersistd", ...)，被 SELinux 拒绝后
+# 抛 RuntimeException，导致 Settings 直接闪退（"设置已停止运行"）。
+#
+# ROM 把开发者选项整页禁用了，所以这个坑一直没人踩到；一旦把页面放出来就必崩。
+#
+# 补上这两条最小权限即可（只针对 logpersistd_logging_prop 这一个属性类型，
+# 不涉及其它属性）：
+#   - property_service set : 允许写 logd.logpersistd
+#   - file open/read       : 允许读该属性区文件
+#
+# 移除本模块后重启，策略回到 ROM 原样。
+
+allow system_app logpersistd_logging_prop property_service set
+allow system_app logpersistd_logging_prop file { open read }
