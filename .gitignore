@@ -32,3 +32,7 @@ IDE
 tmp/
 temp/
 /README.md
+
+# Python
+__pycache__/
+*.pyc
