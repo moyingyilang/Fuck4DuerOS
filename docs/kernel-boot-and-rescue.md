@@ -545,3 +545,71 @@ usb_send failed : LIBUSB_ERROR_TIMEOUT
 - ✅ **BROM 握手可复现成功**（`CMD_CONNECT bootrom`）
 - ❌ 数据收发阶段失败，救援链路尚未打通
 - 下一步优先验证「换主机」与「Windows 驱动 vs libusb」这两条
+
+---
+
+# 关键突破：fastbootd 的进入方法（2026-10-02 22:1x）
+
+## 来源
+
+`Seuj09/Spd_dump_termux` 的 Release 里有一个 arm64 工具包
+`spreadtrum_flash_termux_arm64.zip`，其中包含两个 2048 字节的 BCB 文件：
+
+```text
+misc-fastbootd.bin   2048 B
+misc-wipe.bin        2048 B
+```
+
+## 内容解析
+
+```text
+misc-fastbootd.bin:
+  偏移 0x00   "boot-recovery"                ← BCB command 字段
+  偏移 0x40   "recovery\n--fastboot\n"       ← BCB recovery 参数
+
+misc-wipe.bin:
+  偏移 0x00   "boot-recovery"
+  偏移 0x40   "recovery\n--wipe_data\n"      ← 标准恢复出厂
+```
+
+## 机制
+
+**`--fastboot` 是传给 recovery 的参数，走的是 AOSP 自己的路径**
+（`recovery --fastboot` → 启动 fastbootd），**与 uboot 的 `cboot` 无关**。
+
+Android 的 `init` 会读 `misc` 分区的 BCB：
+
+1. command = `boot-recovery` → 引导 recovery ramdisk（本机是 TWRP）
+2. recovery 参数含 `--fastboot` → 进入 **fastbootd**（用户空间 fastboot）
+
+## 这解释了两件事
+
+1. **为什么在 uboot 里找不到 `first_mode` / `cboot` 模式选择的代码引用** ——
+   那条路径本来就不在 uboot 的 `cboot` 里，而是 Android 侧的 BCB 机制。
+   （uboot 字符串里那两行 `recovery` / `--fastboot` 是解析 BCB 的痕迹。）
+2. **为什么 `adb reboot bootloader` 出来的是 `18d1:4ee8`** ——
+   那是 uboot 自己的 bootloader 模式，不是 fastbootd。
+
+## 操作方法
+
+从 Android（root）写入 BCB，然后重启：
+
+```sh
+dd if=misc-fastbootd.bin of=/dev/block/by-name/misc bs=2048 count=1
+sync
+reboot
+```
+
+之后应当出现 **fastbootd**，此时 `fastboot devices` 可用：
+
+```sh
+fastboot devices
+```
+
+**这同时提供了刷写通路与救援通路**——之前的判断是「fastboot 不可用、
+只能靠 BROM」，现在可以修正为：**fastbootd 可用，只要先写对 BCB**。
+
+## 附：写入所需文件
+
+`misc-fastbootd.bin` 与 `misc-wipe.bin` 已随本仓库保存在
+`tools/spd_dump/` 目录下。
