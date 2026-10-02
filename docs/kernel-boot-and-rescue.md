@@ -613,3 +613,101 @@ fastboot devices
 
 `misc-fastbootd.bin` 与 `misc-wipe.bin` 已随本仓库保存在
 `tools/spd_dump/` 目录下。
+
+---
+
+# ✅ 已打通：fastbootd 进入方法（2026-10-02 22:17-22:20 实测验证）
+
+## 结论
+
+**写对 `misc` 分区的 BCB，即可让设备启动进 fastbootd，此时标准
+`fastboot` 完全可用。整条刷写/救援链路已打通。**
+
+## 操作（三步，全部实测通过）
+
+```sh
+# 1. 写入 BCB（仅覆盖 misc 前 2048 字节，其余不动）
+dd if=misc-fastbootd.bin of=/dev/block/by-name/misc bs=2048 count=1 conv=fsync
+sync
+
+# 2. 重启
+reboot
+
+# 3. 约 40 秒后设备进入 fastbootd
+fastboot devices
+```
+
+实测输出：
+
+```text
+Bus 001 Device 082: ID 18d1:4ee0
+<已隐去的序列号>     fastbootd
+```
+
+## BCB 文件内容
+
+```text
+misc-fastbootd.bin (2048 B)
+  偏移 0x00   "boot-recovery"              ← command
+  偏移 0x40   "recovery\n--fastboot\n"     ← 传给 recovery 的参数
+```
+
+`--fastboot` 是 **AOSP recovery 的标准参数**，recovery（本机为 TWRP）
+收到后启动 **fastbootd**（用户空间 fastboot）。
+与 uboot 的 `cboot` 无关——这也解释了为什么在 uboot 里找不到相关代码引用。
+
+## fastbootd 能力实测
+
+```text
+product             xps06e
+current-slot        a
+is-userspace        yes              ← 确认是 fastbootd
+max-download-size   0x10000000       (256 MB)
+slot-count          2
+
+可刷写分区：
+  boot_a / boot_b
+  init_boot_a / init_boot_b
+  vendor_boot_a / vendor_boot_b
+  dtbo_a / dtbo_b
+  vbmeta / vbmeta_system / vbmeta_vendor / vbmeta_product / vbmeta_odm …
+  super
+```
+
+## 安全性验证
+
+| 项目 | 结果 |
+| --- | --- |
+| BCB 是否一次性 | ✅ 是。进入 fastbootd 后 `misc` 前 2048 字节被自动清零 |
+| 是否会把设备锁死在 fastbootd | ✅ 不会，`fastboot reboot` 后正常回到 Android |
+| 返回正常系统后的状态 | `sys.boot_completed=1`，`slot_suffix=_a`，无线 adb 正常 |
+| 原 BCB 备份 | 已备份至 `/data/local/tmp/misc-orig.bin` |
+
+## 这对项目的意义
+
+此前判断「fastboot 不可用，只能靠 BROM/FDL」，**这个判断需要修正**：
+
+| 之前 | 现在 |
+| --- | --- |
+| fastboot 不可用（`adb reboot bootloader` → `18d1:4ee8` 无法通信） | **fastbootd 完全可用**，只要先写对 BCB |
+| 内核刷挂只能靠 BROM/FDL | **可以 fastboot 刷回备份**，BROM 退化为「最后保险」 |
+| Android arm64 上 spd_dump 的 BROM 数据传输问题必须先修 | **暂时不必修**——fastbootd 已提供日常刷写与救援 |
+
+**因此，刷入自编译内核的风险从「单向门」降为「可回退」。**
+
+## 完整救援流程（已验证可用）
+
+```sh
+# 进入 fastbootd
+adb shell 'su -c "dd if=misc-fastbootd.bin of=/dev/block/by-name/misc bs=2048 count=1"'
+adb reboot
+
+# 刷回备份
+fastboot flash boot     f4d_backup/boot_a.img
+fastboot flash init_boot f4d_backup/init_boot_a.img
+fastboot flash vendor_boot f4d_backup/vendor_boot_a.img
+fastboot flash dtbo     f4d_backup/dtbo_a.img
+
+# 重启回系统
+fastboot reboot
+```
