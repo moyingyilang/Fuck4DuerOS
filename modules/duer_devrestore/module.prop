@@ -1,0 +1,6 @@
+id=duer_devrestore
+name=DuerOS DevRestore
+version=1.0
+versionCode=1
+author=moyingyilang
+description=恢复被定制 ROM 去掉的开发能力：重新启用 ADB 授权(ro.adb.secure=1)、开发者选项/系统跟踪/导航栏/多用户等被禁用的系统页面。
