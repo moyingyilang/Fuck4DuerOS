@@ -1,0 +1,60 @@
+# /proc/meminfo
+MemTotal:        5925648 kB
+MemFree:          184264 kB
+MemAvailable:    3299508 kB
+Buffers:            2996 kB
+Cached:          3449828 kB
+SwapCached:        38948 kB
+Active:          3509112 kB
+Inactive:        1110452 kB
+Active(anon):     931436 kB
+Inactive(anon):   340924 kB
+Active(file):    2577676 kB
+Inactive(file):   769528 kB
+SwapTotal:      11351424 kB
+SwapFree:        8529184 kB
+Shmem:             46884 kB
+Slab:             367168 kB
+SReclaimable:     104232 kB
+SUnreclaim:       262936 kB
+KernelStack:       49968 kB
+PageTables:        93792 kB
+ShmemHugePages:        0 kB
+ShmemPmdMapped:        0 kB
+
+# swaps
+Filename				Type		Size	Used	Priority
+/dev/block/zram0                        partition	2962820	0	-2
+/data/swapfile                          file		8388604	2822240	0
+
+# zram0
+disksize         3033931776
+comp_algorithm   lzo lzo-rle [lz4] zstd 
+mm_stat              4096        0        0        0     4096        0        0        0        0        0
+mem_used_total   
+
+# vm 参数
+vm.swappiness                   200
+vm.vfs_cache_pressure           100
+vm.dirty_ratio                  10
+vm.dirty_background_ratio       5
+vm.dirty_expire_centisecs       3000
+vm.dirty_writeback_centisecs    500
+vm.min_free_kbytes              32768
+vm.extra_free_kbytes            13601
+vm.watermark_scale_factor       100
+vm.overcommit_memory            1
+vm.page-cluster                 0
+vm.stat_interval                1
+
+# lmk / 进程回收
+
+# PSI
+--- /proc/pressure/cpu
+some avg10=2.44 avg60=2.29 avg300=2.19 total=1548514735
+--- /proc/pressure/memory
+some avg10=0.06 avg60=0.03 avg300=0.08 total=363131089
+full avg10=0.06 avg60=0.02 avg300=0.03 total=184603390
+--- /proc/pressure/io
+some avg10=0.38 avg60=0.15 avg300=0.23 total=397037341
+full avg10=0.13 avg60=0.07 avg300=0.18 total=263392943

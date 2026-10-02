@@ -1,0 +1,12 @@
+# date
+Fri Oct  2 19:16:26 CST 2026
+# uptime
+30827.36 146701.52
+# loadavg
+10.66 10.62 10.83 5/3095 27390
+ro.product.model=XD-SEE00-2301
+ro.build.display.id=DuerShow_T616_v1.65.0.20250825010819358.R
+ro.build.version.release=12
+ro.build.version.sdk=31
+# kernel
+Linux localhost 5.4.161-ab20250825010819358 #1 SMP PREEMPT PREEMPT_RT Mon Aug 25 08:35:15 CST 2025 aarch64

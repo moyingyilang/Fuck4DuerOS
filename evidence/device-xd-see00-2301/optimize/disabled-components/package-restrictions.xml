@@ -1,0 +1,239 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<package-restrictions>
+  <pkg name="com.android.cts.priv.ctsshim" ceDataInode="2720" />
+  <pkg name="com.android.internal.display.cutout.emulation.corner" ceDataInode="2723" />
+  <pkg name="com.android.internal.display.cutout.emulation.double" ceDataInode="2729" />
+  <pkg name="com.baidu.duer.superapp" ceDataInode="120460" enabled="3" enabledCaller="shell:1000">
+    <enabled-components>
+      <item name="androidx.work.impl.background.systemjob.SystemJobService" />
+    </enabled-components>
+  </pkg>
+  <pkg name="com.android.providers.telephony" ceDataInode="2732" />
+  <pkg name="com.android.dynsystem" ceDataInode="2735" />
+  <pkg name="com.sprd.engineermode" ceDataInode="2738" />
+  <pkg name="com.android.theme.icon.pebble" ceDataInode="2745" />
+  <pkg name="com.goodfather.textbook.pad" ceDataInode="2748" enabled="2" enabledCaller="shell:1000" />
+  <pkg name="com.android.providers.calendar" ceDataInode="2752" />
+  <pkg name="com.android.providers.media" ceDataInode="2760" />
+  <pkg name="com.android.networkstack.tethering.overlay" ceDataInode="2769" />
+  <pkg name="com.android.internal.systemui.navbar.gestural_wide_back" ceDataInode="2773" />
+  <pkg name="com.android.wallpapercropper" ceDataInode="2778" />
+  <pkg name="com.android.theme.icon.vessel" ceDataInode="2781" />
+  <pkg name="com.android.theme.color.cinnamon" ceDataInode="2784" />
+  <pkg name="com.android.theme.icon.taperedrect" ceDataInode="2787" />
+  <pkg name="com.android.documentsui" ceDataInode="2790" />
+  <pkg name="com.android.externalstorage" ceDataInode="2793" />
+  <pkg name="com.android.htmlviewer" ceDataInode="2798" />
+  <pkg name="com.android.companiondevicemanager" ceDataInode="2801" />
+  <pkg name="com.baidu.duershow.media" ceDataInode="2805" />
+  <pkg name="com.android.mms.service" ceDataInode="2808" />
+  <pkg name="com.sprd.omacp" ceDataInode="2822" />
+  <pkg name="com.android.providers.downloads" ceDataInode="2831" />
+  <pkg name="com.android.messaging" ceDataInode="2834">
+    <enabled-components>
+      <item name="com.android.messaging.datamodel.NoConfirmationSmsSendService" />
+    </enabled-components>
+    <disabled-components>
+      <item name="com.android.messaging.receiver.AbortMmsWapPushReceiver" />
+      <item name="com.android.messaging.receiver.AbortSmsReceiver" />
+      <item name="com.android.messaging.receiver.MmsWapPushReceiver" />
+      <item name="com.android.messaging.receiver.SmsReceiver" />
+    </disabled-components>
+  </pkg>
+  <pkg name="com.android.overlay.wallpaperconfig" ceDataInode="2837" />
+  <pkg name="com.google.android.networkstack.tethering.overlay" ceDataInode="2840" />
+  <pkg name="com.android.wifi.unisoc.resources" ceDataInode="2843" />
+  <pkg name="com.android.internal.systemui.onehanded.gestural" ceDataInode="2846" />
+  <pkg name="com.android.overlay.dynamiciconconfig" ceDataInode="2849" />
+  <pkg name="android.overlay.dynamicNavBar" ceDataInode="2852" />
+  <pkg name="com.android.soundrecorder" ceDataInode="2860" />
+  <pkg name="com.sprd.factorytest" ceDataInode="2863" />
+  <pkg name="com.android.providers.downloads.ui" ceDataInode="2866" />
+  <pkg name="com.android.pacprocessor" ceDataInode="2869" />
+  <pkg name="com.android.simappdialog" ceDataInode="2872" />
+  <pkg name="com.android.networkstack" ceDataInode="2875" />
+  <pkg name="com.sprd.validationtools" ceDataInode="2878" />
+  <pkg name="com.android.connectivity.resources" ceDataInode="2881" />
+  <pkg name="com.android.internal.display.cutout.emulation.hole" ceDataInode="2884" />
+  <pkg name="com.android.internal.display.cutout.emulation.tall" ceDataInode="2887" />
+  <pkg name="com.android.networkstack.overlay" ceDataInode="2890" />
+  <pkg name="com.android.modulemetadata" ceDataInode="2893" />
+  <pkg name="com.android.certinstaller" ceDataInode="2897" />
+  <pkg name="com.android.theme.color.black" ceDataInode="2900" />
+  <pkg name="com.android.carrierconfig" ceDataInode="2904" />
+  <pkg name="com.android.theme.color.green" ceDataInode="2907" />
+  <pkg name="com.android.theme.color.ocean" ceDataInode="2910" />
+  <pkg name="com.unisoc.enginecore" ceDataInode="317995" />
+  <pkg name="com.android.theme.color.space" ceDataInode="2916" />
+  <pkg name="com.android.internal.systemui.navbar.threebutton" ceDataInode="2919" />
+  <pkg name="android" ceDataInode="2922" />
+  <pkg name="com.android.contacts" ceDataInode="2947" />
+  <pkg name="com.android.camera2" ceDataInode="2951" stopped="true" />
+  <pkg name="com.baidu.duer.aieye.correction" ceDataInode="2954" enabled="2" enabledCaller="shell:1000" />
+  <pkg name="com.spreadtrum.proxy.nfwlocation" ceDataInode="2960" />
+  <pkg name="com.baidu.atomkit" ceDataInode="2963" enabled="2" enabledCaller="shell:1000" />
+  <pkg name="com.xiaodu.speak" ceDataInode="2966" />
+  <pkg name="android.overlay.navbar" ceDataInode="2969" />
+  <pkg name="com.android.egg" ceDataInode="2972" />
+  <pkg name="com.android.mtp" ceDataInode="2975" />
+  <pkg name="com.android.nfc" ceDataInode="2978" enabled="2" enabledCaller="com.android.nfc" />
+  <pkg name="com.android.ons" ceDataInode="2981" />
+  <pkg name="com.android.stk" ceDataInode="2984">
+    <disabled-components>
+      <item name="com.android.stk.StkMain" />
+      <item name="com.android.stk.StkMain1" />
+      <item name="com.android.stk.StkMain2" />
+    </disabled-components>
+  </pkg>
+  <pkg name="com.android.launcher3" ceDataInode="285551" />
+  <pkg name="com.android.phone.injection" ceDataInode="2990" />
+  <pkg name="com.android.backupconfirm" ceDataInode="2993" />
+  <pkg name="com.android.settings.auto_generated_rro_vendor__" ceDataInode="2996" />
+  <pkg name="com.android.provision" ceDataInode="2999">
+    <disabled-components>
+      <item name="com.android.provision.DefaultActivity" />
+    </disabled-components>
+  </pkg>
+  <pkg name="com.android.settings.intelligence" ceDataInode="3005" />
+  <pkg name="android.overlay.multiuser" ceDataInode="3008" />
+  <pkg name="com.sprd.cameracalibration" ceDataInode="3011" />
+  <pkg name="com.sprd.agingtest" ceDataInode="3014" />
+  <pkg name="com.android.internal.systemui.navbar.gestural_extra_wide_back" ceDataInode="3017" />
+  <pkg name="com.android.providers.settings" ceDataInode="3020" />
+  <pkg name="com.android.sharedstoragebackup" ceDataInode="3023" />
+  <pkg name="com.android.printspooler" ceDataInode="3026" />
+  <pkg name="com.android.dreams.basic" ceDataInode="3035" />
+  <pkg name="com.android.webview" ceDataInode="3038" />
+  <pkg name="com.unisoc.silent.reboot" ceDataInode="3041" />
+  <pkg name="com.baidu.duershow.dcs" ceDataInode="318002" />
+  <pkg name="com.android.se" ceDataInode="3047" />
+  <pkg name="com.android.inputdevices" ceDataInode="3050" />
+  <pkg name="com.unisoc.auto_generated_rro_product__" ceDataInode="3053" />
+  <pkg name="com.android.bips" ceDataInode="3056" />
+  <pkg name="com.android.unisoc.telephony.server" ceDataInode="3059" />
+  <pkg name="com.android.musicfx" ceDataInode="3065" />
+  <pkg name="com.android.providers.settings.auto_generated_rro_vendor__" ceDataInode="3077" />
+  <pkg name="com.google.android.webview" ceDataInode="91722" />
+  <pkg name="com.android.theme.icon.teardrop" ceDataInode="3080" />
+  <pkg name="android.ext.shared" ceDataInode="3083" />
+  <pkg name="com.android.onetimeinitializer" ceDataInode="3086" />
+  <pkg name="com.android.server.telecom" ceDataInode="3089" />
+  <pkg name="com.android.keychain" ceDataInode="3092" />
+  <pkg name="com.sprd.uasetting" ceDataInode="3095" />
+  <pkg name="com.android.printservice.recommendation" ceDataInode="3101" />
+  <pkg name="com.android.dialer" ceDataInode="3105" />
+  <pkg name="com.android.gallery3d" ceDataInode="3111" />
+  <pkg name="com.spreadtrum.ims" ceDataInode="3114" />
+  <pkg name="android.ext.services" ceDataInode="3117" />
+  <pkg name="com.android.wifi.resources" ceDataInode="3120" />
+  <pkg name="com.android.calllogbackup" ceDataInode="3131" />
+  <pkg name="com.android.wifi.resources.unisoc.marlin3" ceDataInode="3134" />
+  <pkg name="com.sprd.powersavemodelauncher" ceDataInode="3137" enabled="2" enabledCaller="android" />
+  <pkg name="com.android.cameraextensions" ceDataInode="3141" />
+  <pkg name="com.android.localtransport" ceDataInode="3144" />
+  <pkg name="com.android.packageinstaller" ceDataInode="3147" />
+  <pkg name="com.android.carrierdefaultapp" ceDataInode="3150">
+    <disabled-components>
+      <item name="com.android.carrierdefaultapp.URLHandlerActivity" />
+    </disabled-components>
+  </pkg>
+  <pkg name="com.android.theme.font.notoserifsource" ceDataInode="3153" />
+  <pkg name="com.android.proxyhandler" ceDataInode="3156" />
+  <pkg name="com.android.internal.display.cutout.emulation.waterfall" ceDataInode="3159" />
+  <pkg name="com.sprd.logmanager" ceDataInode="3165" />
+  <pkg name="com.android.managedprovisioning" ceDataInode="3168" />
+  <pkg name="com.android.networkstack.tethering" ceDataInode="3171" />
+  <pkg name="com.android.soundpicker" ceDataInode="3174" />
+  <pkg name="com.sprd.srmi" ceDataInode="3177" />
+  <pkg name="com.android.dreams.phototable" ceDataInode="3180" />
+  <pkg name="com.android.smspush" ceDataInode="3186" />
+  <pkg name="com.baidu.duer.appstore" ceDataInode="3189" enabled="2" enabledCaller="shell:1000" />
+  <pkg name="com.android.wallpaper.livepicker" ceDataInode="3192" />
+  <pkg name="com.android.phone.auto_generated_rro_vendor__" ceDataInode="3195" />
+  <pkg name="com.android.imsserviceentitlement" ceDataInode="3198" />
+  <pkg name="com.android.theme.icon.squircle" ceDataInode="3201" />
+  <pkg name="com.sprd.providers.photos" ceDataInode="3204" />
+  <pkg name="com.android.storagemanager" ceDataInode="3207" />
+  <pkg name="com.android.bookmarkprovider" ceDataInode="3210" />
+  <pkg name="com.android.settings" ceDataInode="3213">
+    <enabled-components>
+      <item name="com.android.settings.Settings$ConnectedDeviceDashboardActivity" />
+      <item name="com.android.settings.Settings$PowerUsageSummaryActivity" />
+      <item name="com.android.settings.Settings$WifiDisplaySettingsActivity" />
+      <item name="com.android.settings.Settings$BluetoothSettingsActivity" />
+      <item name="com.android.settings.Settings$WifiSettingsActivity" />
+      <item name="com.android.settings.Settings$SmartControlsSettingsActivity" />
+      <item name="com.android.settings.Settings$DataUsageSummaryActivity" />
+    </enabled-components>
+    <disabled-components>
+      <item name="com.android.settings.CryptKeeper" />
+      <item name="com.android.settings.Settings$NavigationBarSettingsActivity" />
+      <item name="com.android.settings.Settings$DevelopmentSettingsDashboardActivity" />
+      <item name="com.android.settings.Settings$UserSettingsActivity" />
+    </disabled-components>
+  </pkg>
+  <pkg name="com.spreadtrum.sgps" ceDataInode="3216" />
+  <pkg name="com.google.android.networkstack.overlay" ceDataInode="3219" />
+  <pkg name="com.android.networkstack.permissionconfig" ceDataInode="3222" />
+  <pkg name="com.baidu.launcher" ceDataInode="266671">
+    <disabled-components>
+      <item name="com.baidu.duer.account.sms.SmsLoginActivity" />
+      <item name="com.baidu.duer.prism.PrismStatusReiver" />
+      <item name="com.xiaoyu.communication.telecom.TelecomCallVoltePhoneActivity" />
+      <item name="com.xiaoyu.communication.activity.CallPhoneActivity" />
+      <item name="com.baidu.duer.child.service.ContactsControlService" />
+      <item name="com.xiaoyu.communication.activity.global.SelectDefaultPhoneActivity" />
+    </disabled-components>
+  </pkg>
+  <pkg name="android.overlay.framework" ceDataInode="3231" />
+  <pkg name="com.android.wifi.unisoc.resources.marlin3" ceDataInode="3234" />
+  <pkg name="com.android.cts.ctsshim" ceDataInode="3237" />
+  <pkg name="com.sprd.sprdnote" ceDataInode="3240" />
+  <pkg name="com.android.wifi.unisoc.resources.merlion" ceDataInode="3243" />
+  <pkg name="com.android.wallpaper" ceDataInode="3246" />
+  <pkg name="com.android.vpndialogs" ceDataInode="3249" />
+  <pkg name="com.unisoc.phone" ceDataInode="3252" />
+  <pkg name="com.android.phone" ceDataInode="3255" />
+  <pkg name="com.android.shell" ceDataInode="3258" />
+  <pkg name="com.android.wallpaperbackup" ceDataInode="3261" />
+  <pkg name="com.android.providers.blockednumber" ceDataInode="3264" />
+  <pkg name="com.android.providers.userdictionary" ceDataInode="3267" />
+  <pkg name="com.android.providers.media.module" ceDataInode="3270" />
+  <pkg name="com.android.emergency" ceDataInode="3273" />
+  <pkg name="com.android.wifi.resources.unisoc" ceDataInode="3276" />
+  <pkg name="com.android.hotspot2.osulogin" ceDataInode="3279" />
+  <pkg name="com.android.internal.systemui.navbar.gestural" ceDataInode="3282" />
+  <pkg name="com.android.location.fused" ceDataInode="3285" />
+  <pkg name="com.android.theme.color.orchid" ceDataInode="3288" />
+  <pkg name="com.android.deskclock" ceDataInode="3291" />
+  <pkg name="com.android.systemui" ceDataInode="3294" />
+  <pkg name="com.android.theme.color.purple" ceDataInode="3297" />
+  <pkg name="com.android.bluetoothmidiservice" ceDataInode="3300" />
+  <pkg name="com.android.permissioncontroller" ceDataInode="3303">
+    <disabled-components>
+      <item name="com.android.permissioncontroller.role.ui.SpecialAppAccessListActivity" />
+    </disabled-components>
+  </pkg>
+  <pkg name="com.android.traceur" ceDataInode="3306">
+    <disabled-components>
+      <item name="com.android.traceur.StorageProvider" />
+      <item name="com.android.traceur.QsService" />
+    </disabled-components>
+  </pkg>
+  <pkg name="com.baidu.duer.aieye.image.preprocessing" ceDataInode="3309" enabled="2" enabledCaller="shell:1000" />
+  <pkg name="android.auto_generated_rro_product__" ceDataInode="3312" />
+  <pkg name="com.android.bluetooth" ceDataInode="3318">
+    <disabled-components>
+      <item name="com.android.bluetooth.telephony.BluetoothInCallService" />
+    </disabled-components>
+  </pkg>
+  <pkg name="com.android.providers.contacts" ceDataInode="3321" />
+  <pkg name="com.android.captiveportallogin" ceDataInode="3324" />
+  <pkg name="com.android.theme.icon.roundedrect" ceDataInode="3327" />
+  <pkg name="com.android.internal.systemui.navbar.gestural_narrow_back" ceDataInode="3330" />
+  <pkg name="android.auto_generated_rro_vendor__" ceDataInode="3336" />
+  
+  <persistent-preferred-activities />
+  <crossProfile-intent-filters />
+  <default-apps />
+</package-restrictions>

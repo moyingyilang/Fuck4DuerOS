@@ -1,0 +1,16 @@
+# 进程总数: 485
+# 线程总数: 3097
+
+# RSS 前 20
+10599 u0_a124      277688 com.android.systemui
+ 2838 u0_a77       184540 com.baidu.launcher
+ 7083 u0_i9003     143048 com.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0
+ 1924 system       137032 com.android.settings
+ 2081 u0_a190      127256 com.android.launcher3
+ 1698 radio        101576 com.android.phone
+
+# 运行中的第三方/可停用进程
+
+# 已注册服务数
+# 已注册 JobService 数
+# 已隐藏 57 行第三方应用进程（隐私）

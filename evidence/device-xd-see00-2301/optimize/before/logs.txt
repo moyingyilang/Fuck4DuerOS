@@ -1,0 +1,26 @@
+# logd 大小
+[init.svc.logd]: [running]
+[init.svc.logd-auditctl]: [stopped]
+[init.svc.logd-reinit]: [stopped]
+[init.svc_debug_pid.logd]: [2425]
+[init.svc_debug_pid.logd-auditctl]: []
+[init.svc_debug_pid.logd-reinit]: []
+[log.tag.APM_AudioPolicyManager]: [D]
+[log.tag.stats_log]: [I]
+[persist.logd.size]: []
+[persist.logd.size.crash]: []
+[persist.logd.size.main]: []
+[persist.logd.size.system]: []
+[persist.sys.baidu.log.kernel_tag]: [10089]
+[persist.sys.baidu.log.sysInfo_tag]: [15]
+[ro.boottime.logd]: [19287282409]
+[ro.boottime.logd-auditctl]: [151044533661]
+[ro.boottime.logd-reinit]: [94915667124]
+[ro.logd.kernel]: [true]
+[ro.logd.size.stats]: [64K]
+[sys.ylog.bootimes]: [1]
+
+# 日志缓冲
+main: ring buffer is 256 KiB (247 KiB consumed, 824 KiB readable), max entry is 5120 B, max payload is 4068 B
+system: ring buffer is 256 KiB (253 KiB consumed, 2 MiB readable), max entry is 5120 B, max payload is 4068 B
+crash: ring buffer is 256 KiB (64 KiB consumed, 0 B readable), max entry is 5120 B, max payload is 4068 B

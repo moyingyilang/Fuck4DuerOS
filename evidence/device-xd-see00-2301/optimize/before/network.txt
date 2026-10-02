@@ -1,0 +1,61 @@
+# TCP 拥塞控制
+available: reno cubic
+current:   cubic
+
+net.ipv4.tcp_rmem                     524288	1048576	2097152
+net.ipv4.tcp_wmem                     262144	524288	1048576
+net.ipv4.tcp_fastopen                 1
+net.ipv4.tcp_slow_start_after_idle    1
+net.ipv4.tcp_tw_reuse                 2
+net.ipv4.tcp_fin_timeout              60
+net.ipv4.tcp_max_syn_backlog          512
+
+# 连接数
+tcp=40 udp=5
+
+# DNS
+[net.dns1]: [127.0.0.1]
+[net.dns2]: [180.76.76.76]
+[net.dns3]: [<已隐去的内网地址>]
+
+# 已加载内核模块
+mipi_driver 45056
+sprd_mipi 20480
+sprd_net_helper 24576
+cpufreq_userspace 24576
+sprd_compr_2stage_dma 49152
+sprd_dmaengine_pcm 45056
+snd_soc_sprd_vbc_fe 36864
+snd_soc_sprd_vbc_v4 385024
+sprd_platform_pcm_routing 114688
+snd_soc_sprd_pdm_r2p0 36864
+snd_soc_sprd_dummy_codec 20480
+snd_soc_sprd_codec_sc2730_power_dev 32768
+snd_soc_sprd_codec_sc2730_power 40960
+snd_soc_sprd_codec_sc2730 217088
+snd_soc_sprd_card 77824
+snd_soc_aw87xxx 114688
+sprd_audcp_boot 20480
+sprd_audcp_dvfs 36864
+mcdt_hw_r2p0 49152
+audio_pipe 36864
+sprd_apipe 36864
+ax88179_178a 40960
+asix 90112
+audio_dsp_dump 45056
+audio_sipc 53248
+audio_mem 32768
+agdsp_access 36864
+sprd_wdf 24576
+sprd_pmic_wdt 20480
+sc2355_sipc_wlan 512000
+sc2355_sdio_wlan 274432
+sprd_wlan 106496
+musb_sprd 36864
+musb_hdrc 192512
+chipone_tddi_9916 421888
+gnss_pmnotify_ctl 20480
+gnss_dbg 28672
+gnss_common_ctl_all 24576
+sprd_fm 77824
+sprdbt_tty 45056

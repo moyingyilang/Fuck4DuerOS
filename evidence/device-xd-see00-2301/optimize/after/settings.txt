@@ -1,0 +1,24 @@
+=== global ===
+cached_apps_freezer=enabled
+duer_screen_off_timeout_on_battery=-1
+low_battery_sound_timeout=0
+screen_saver_off_timeout=1897000
+sound_trigger_detection_service_op_timeout=15000
+transition_animation_scale=0.5
+window_animation_scale=0.5
+=== system ===
+screen_off_timeout=600000
+=== secure ===
+doze_enabled=1
+doze_pulse_on_double_tap=null
+doze_pulse_on_pick_up=1
+doze_tap_gesture=null
+long_press_timeout=400
+multi_press_timeout=300
+show_first_crash_dialog_dev_option=1
+sleep_timeout=-1
+
+=== 当前动画缩放 ===
+window_animation_scale       0.5
+transition_animation_scale   0.5
+animator_duration_scale      0.5

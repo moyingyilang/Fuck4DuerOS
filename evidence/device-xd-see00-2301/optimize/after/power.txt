@@ -1,0 +1,75 @@
+Current Battery Service state:
+  AC powered: true
+  USB powered: true
+  Wireless powered: false
+  Max charging current: 2000000
+  Max charging voltage: 9000000
+  Charge counter: 1
+  status: 2
+  health: 2
+  present: true
+  level: 85
+  scale: 100
+  voltage: 4408
+  temperature: 431
+  technology: Li-ion
+
+# 唤醒锁
+Wake Locks: size=1
+  PARTIAL_WAKE_LOCK              'MSF:WakeLock:kernel' ACQ=-4s363ms (uid=10151 pid=4195)
+
+Suspend Blockers: size=4
+  PowerManagerService.WakeLocks: ref count=1
+  PowerManagerService.Display: ref count=1
+  PowerManagerService.Broadcasts: ref count=0
+  PowerManagerService.WirelessChargerDetector: ref count=0
+
+Display Power: com.android.server.power.PowerManagerService$1@d95b574
+
+Battery saving stats:
+  Battery Saver is currently: OFF
+    Times full enabled: 0
+    Times adaptive enabled: 0
+  
+  Drain stats:
+                     Battery saver OFF                          ON
+  NonDoze NonIntr:      3m      0mAh(  0%)      0.0mAh/h          0m      0mAh(  0%)      0.0mAh/h
+             Intr:    284m    276mAh( 39%)     58.4mAh/h          0m      0mAh(  0%)      0.0mAh/h
+  Deep    NonIntr:    151m      0mAh(  5%)      0.0mAh/h          0m      0mAh(  0%)      0.0mAh/h
+             Intr:      0m      0mAh(  0%)      0.0mAh/h          0m      0mAh(  0%)      0.0mAh/h
+  Light   NonIntr:     29m     34mAh(  3%)     70.7mAh/h          0m      0mAh(  0%)      0.0mAh/h
+             Intr:      0m      9mAh(  0%)    712.7mAh/h          0m      0mAh(  0%)      0.0mAh/h
+
+Battery saver policy (*NOTE* they only apply when battery saver is ON):
+  Settings: battery_saver_constants
+    value: 
+  Settings: (overlay)
+    value: 
+  DeviceConfig: battery_saver
+
+# 待机/Doze
+  Settings:
+    flex_time_short=+5s0ms
+    light_after_inactive_to=+15s0ms
+    light_pre_idle_to=+30s0ms
+    light_idle_to=+15s0ms
+    light_idle_to_initial_flex=+5s0ms
+    light_max_idle_to_flex=+1m0s0ms
+    light_idle_factor=2.0
+    light_max_idle_to=+1m0s0ms
+    light_idle_maintenance_min_budget=+15s0ms
+    light_idle_maintenance_max_budget=+30s0ms
+    min_light_maintenance_time=+1s0ms
+    min_deep_maintenance_time=+5s0ms
+    inactive_to=+3m0s0ms
+    sensing_to=+1m0s0ms
+    locating_to=+15s0ms
+    location_accuracy=20.0m
+    motion_inactive_to=+1m0s0ms
+    motion_inactive_to_flex=+5s0ms
+    idle_after_inactive_to=+3m0s0ms
+    idle_pending_to=+30s0ms
+    max_idle_pending_to=+1m0s0ms
+    idle_pending_factor=2.0
+    quick_doze_delay_to=+15s0ms
+    idle_to=+6m0s0ms

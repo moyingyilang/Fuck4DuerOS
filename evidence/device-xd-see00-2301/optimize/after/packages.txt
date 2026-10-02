@@ -1,0 +1,14 @@
+# 全部包: 240
+# 系统包: 194
+# 第三方包: 46
+# 已禁用: 8
+
+# 已禁用清单
+package:com.baidu.duer.superapp
+package:com.goodfather.textbook.pad
+package:com.baidu.duer.aieye.correction
+package:com.baidu.atomkit
+package:com.android.nfc
+package:com.sprd.powersavemodelauncher
+package:com.baidu.duer.appstore
+package:com.baidu.duer.aieye.image.preprocessing

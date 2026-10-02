@@ -1,0 +1,198 @@
+# df
+Filesystem        Size Used Avail Use% Mounted on
+/dev/block/dm-0   2.4G 2.4G     0 100% /
+tmpfs             2.8G 1.3M  2.8G   1% /dev
+tmpfs             2.8G    0  2.8G   0% /mnt
+/dev/block/sda55   11M 184K   11M   2% /metadata
+/dev/block/dm-1   278M 278M     0 100% /system_ext
+/dev/block/dm-2   642M 642M     0 100% /vendor
+/dev/block/dm-3   121M 121M     0 100% /product
+/dev/block/dm-4    16M  16M   52K 100% /vendor_dlkm
+magisk            2.8G 3.5M  2.8G   1% /debug_ramdisk
+tmpfs             2.8G  12K  2.8G   1% /apex
+tmpfs             2.8G 496K  2.8G   1% /linkerconfig
+/dev/block/sda1   5.3M 396K  4.9M   8% /mnt/vendor
+/dev/block/sda52  2.8G 1.7G  1.0G  63% /customdata
+/dev/block/sda51   90M  88M  2.0M  98% /cache
+/dev/block/dm-10  103G  81G   22G  79% /data
+/dev/block/loop4  8.2M 8.2M   32K 100% /apex/com.android.adbd@319999999
+/dev/block/loop6  692K 664K   28K  96% /apex/com.android.ipsec@319999900
+/dev/block/loop8  232K  88K  144K  38% /apex/com.android.apex.cts.shim@1
+/dev/block/loop7  2.0M 1.9M   28K  99% /apex/com.android.appsearch@300000000
+/dev/block/loop5  2.3M 2.2M   32K  99% /apex/com.android.tethering@319999900
+/dev/block/loop9  4.8M 4.8M   28K 100% /apex/com.android.conscrypt@319999900
+/dev/block/loop10 232K 152K   80K  66% /apex/com.android.scheduling@319999900
+/dev/block/loop11 3.3M 3.3M   32K 100% /apex/com.android.mediaprovider@319999910
+/dev/block/loop12 6.3M 6.2M   32K 100% /apex/com.android.media@319999900
+/dev/block/loop14 1.6M 1.6M   28K  99% /apex/com.android.os.statsd@319999900
+/dev/block/loop13  18M  18M   32K 100% /apex/com.android.media.swcodec@319999900
+/dev/block/loop15 7.6M 7.6M   28K 100% /apex/com.android.neuralnetworks@319999900
+tmpfs             2.8G    0  2.8G   0% /data_mirror
+/dev/block/loop18  60M  60M   36K 100% /apex/com.android.art@319999900
+/dev/block/loop19 5.3M 5.3M   32K 100% /apex/com.android.extservices@319999900
+/dev/block/loop20  13M  13M   28K 100% /apex/com.android.permission@319999900
+/dev/block/loop17 7.5M 7.5M   36K 100% /apex/com.android.runtime@1
+/dev/block/loop21 832K 804K   28K  97% /apex/com.android.tzdata@319999900
+/dev/block/loop22  39M  39M   28K 100% /apex/com.android.vndk.v31@1
+/dev/block/loop16 2.4M 2.4M   28K  99% /apex/com.android.resolv@319999900
+/dev/block/loop23  35M  35M   28K 100% /apex/com.android.i18n@1
+/dev/block/loop24 692K 664K   28K  96% /apex/com.android.sdkext@319999900
+/dev/block/loop25 5.0M 5.0M   28K 100% /apex/com.android.wifi@319999900
+magisk            2.8G    0  2.8G   0% /system/app
+/dev/fuse         103G  81G   22G  79% /mnt/installer/0/emulated
+
+# 块设备调度与预读
+dm-0             sched=[none] read_ahead_kb=128 nr_requests=128 iostats=0 rq_affinity=0
+dm-1             sched=[none] read_ahead_kb=128 nr_requests=128 iostats=0 rq_affinity=0
+dm-10            sched=[none] read_ahead_kb=128 nr_requests=128 iostats=0 rq_affinity=0
+dm-2             sched=[none] read_ahead_kb=128 nr_requests=128 iostats=0 rq_affinity=0
+dm-3             sched=[none] read_ahead_kb=128 nr_requests=128 iostats=0 rq_affinity=0
+dm-4             sched=[none] read_ahead_kb=128 nr_requests=128 iostats=0 rq_affinity=0
+dm-5             sched=[none] read_ahead_kb=128 nr_requests=128 iostats=0 rq_affinity=0
+dm-6             sched=[none] read_ahead_kb=128 nr_requests=128 iostats=0 rq_affinity=0
+dm-7             sched=[none] read_ahead_kb=128 nr_requests=128 iostats=0 rq_affinity=0
+dm-8             sched=[none] read_ahead_kb=128 nr_requests=128 iostats=0 rq_affinity=0
+dm-9             sched=[none] read_ahead_kb=128 nr_requests=128 iostats=0 rq_affinity=0
+loop0            sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop1            sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop10           sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop11           sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop12           sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop13           sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop14           sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop15           sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop16           sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop17           sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop18           sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop19           sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop2            sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop20           sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop21           sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop22           sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop23           sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop24           sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop25           sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop26           sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop27           sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop28           sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop29           sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop3            sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop30           sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop31           sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop32           sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop33           sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop34           sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop35           sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop36           sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop37           sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop38           sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop39           sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop4            sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop40           sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop41           sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop5            sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop6            sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop7            sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop8            sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+loop9            sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=256 iostats=1 rq_affinity=1
+pmem0            sched=[none] read_ahead_kb=128 nr_requests=128 iostats=0 rq_affinity=0
+ram0             sched=[none] read_ahead_kb=128 nr_requests=128 iostats=0 rq_affinity=0
+ram1             sched=[none] read_ahead_kb=128 nr_requests=128 iostats=0 rq_affinity=0
+ram10            sched=[none] read_ahead_kb=128 nr_requests=128 iostats=0 rq_affinity=0
+ram11            sched=[none] read_ahead_kb=128 nr_requests=128 iostats=0 rq_affinity=0
+ram12            sched=[none] read_ahead_kb=128 nr_requests=128 iostats=0 rq_affinity=0
+ram13            sched=[none] read_ahead_kb=128 nr_requests=128 iostats=0 rq_affinity=0
+ram14            sched=[none] read_ahead_kb=128 nr_requests=128 iostats=0 rq_affinity=0
+ram15            sched=[none] read_ahead_kb=128 nr_requests=128 iostats=0 rq_affinity=0
+ram2             sched=[none] read_ahead_kb=128 nr_requests=128 iostats=0 rq_affinity=0
+ram3             sched=[none] read_ahead_kb=128 nr_requests=128 iostats=0 rq_affinity=0
+ram4             sched=[none] read_ahead_kb=128 nr_requests=128 iostats=0 rq_affinity=0
+ram5             sched=[none] read_ahead_kb=128 nr_requests=128 iostats=0 rq_affinity=0
+ram6             sched=[none] read_ahead_kb=128 nr_requests=128 iostats=0 rq_affinity=0
+ram7             sched=[none] read_ahead_kb=128 nr_requests=128 iostats=0 rq_affinity=0
+ram8             sched=[none] read_ahead_kb=128 nr_requests=128 iostats=0 rq_affinity=0
+ram9             sched=[none] read_ahead_kb=128 nr_requests=128 iostats=0 rq_affinity=0
+sda              sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=62 iostats=1 rq_affinity=1
+sdb              sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=62 iostats=1 rq_affinity=1
+sdc              sched=[[mq-deadline] kyber none] read_ahead_kb=128 nr_requests=62 iostats=1 rq_affinity=1
+zram0            sched=[none] read_ahead_kb=128 nr_requests=128 iostats=0 rq_affinity=0
+
+# fstrim
+/sys/class/block/dm-0/queue/discard_max_bytes 34359734272
+/sys/class/block/dm-1/queue/discard_max_bytes 34359734272
+/sys/class/block/dm-10/queue/discard_max_bytes 134217728
+/sys/class/block/dm-2/queue/discard_max_bytes 34359734272
+/sys/class/block/dm-3/queue/discard_max_bytes 34359734272
+/sys/class/block/dm-4/queue/discard_max_bytes 34359734272
+/sys/class/block/dm-5/queue/discard_max_bytes 34359734272
+/sys/class/block/dm-6/queue/discard_max_bytes 34359734272
+/sys/class/block/dm-7/queue/discard_max_bytes 34359734272
+/sys/class/block/dm-8/queue/discard_max_bytes 34359734272
+/sys/class/block/dm-9/queue/discard_max_bytes 34359734272
+/sys/class/block/loop0/queue/discard_max_bytes 0
+/sys/class/block/loop1/queue/discard_max_bytes 0
+/sys/class/block/loop10/queue/discard_max_bytes 0
+/sys/class/block/loop11/queue/discard_max_bytes 0
+/sys/class/block/loop12/queue/discard_max_bytes 0
+/sys/class/block/loop13/queue/discard_max_bytes 0
+/sys/class/block/loop14/queue/discard_max_bytes 0
+/sys/class/block/loop15/queue/discard_max_bytes 0
+/sys/class/block/loop16/queue/discard_max_bytes 0
+/sys/class/block/loop17/queue/discard_max_bytes 0
+/sys/class/block/loop18/queue/discard_max_bytes 0
+/sys/class/block/loop19/queue/discard_max_bytes 0
+/sys/class/block/loop2/queue/discard_max_bytes 0
+/sys/class/block/loop20/queue/discard_max_bytes 0
+/sys/class/block/loop21/queue/discard_max_bytes 0
+/sys/class/block/loop22/queue/discard_max_bytes 0
+/sys/class/block/loop23/queue/discard_max_bytes 0
+/sys/class/block/loop24/queue/discard_max_bytes 0
+/sys/class/block/loop25/queue/discard_max_bytes 0
+/sys/class/block/loop26/queue/discard_max_bytes 4294966784
+/sys/class/block/loop27/queue/discard_max_bytes 0
+/sys/class/block/loop28/queue/discard_max_bytes 0
+/sys/class/block/loop29/queue/discard_max_bytes 0
+/sys/class/block/loop3/queue/discard_max_bytes 0
+/sys/class/block/loop30/queue/discard_max_bytes 0
+/sys/class/block/loop31/queue/discard_max_bytes 0
+/sys/class/block/loop32/queue/discard_max_bytes 0
+/sys/class/block/loop33/queue/discard_max_bytes 0
+/sys/class/block/loop34/queue/discard_max_bytes 0
+/sys/class/block/loop35/queue/discard_max_bytes 0
+/sys/class/block/loop36/queue/discard_max_bytes 0
+/sys/class/block/loop37/queue/discard_max_bytes 0
+/sys/class/block/loop38/queue/discard_max_bytes 0
+/sys/class/block/loop39/queue/discard_max_bytes 0
+/sys/class/block/loop4/queue/discard_max_bytes 0
+/sys/class/block/loop40/queue/discard_max_bytes 0
+/sys/class/block/loop41/queue/discard_max_bytes 0
+/sys/class/block/loop5/queue/discard_max_bytes 0
+/sys/class/block/loop6/queue/discard_max_bytes 0
+/sys/class/block/loop7/queue/discard_max_bytes 0
+/sys/class/block/loop8/queue/discard_max_bytes 0
+/sys/class/block/loop9/queue/discard_max_bytes 0
+/sys/class/block/pmem0/queue/discard_max_bytes 0
+/sys/class/block/ram0/queue/discard_max_bytes 0
+/sys/class/block/ram1/queue/discard_max_bytes 0
+/sys/class/block/ram10/queue/discard_max_bytes 0
+/sys/class/block/ram11/queue/discard_max_bytes 0
+/sys/class/block/ram12/queue/discard_max_bytes 0
+/sys/class/block/ram13/queue/discard_max_bytes 0
+/sys/class/block/ram14/queue/discard_max_bytes 0
+/sys/class/block/ram15/queue/discard_max_bytes 0
+/sys/class/block/ram2/queue/discard_max_bytes 0
+/sys/class/block/ram3/queue/discard_max_bytes 0
+/sys/class/block/ram4/queue/discard_max_bytes 0
+/sys/class/block/ram5/queue/discard_max_bytes 0
+/sys/class/block/ram6/queue/discard_max_bytes 0
+/sys/class/block/ram7/queue/discard_max_bytes 0
+/sys/class/block/ram8/queue/discard_max_bytes 0
+/sys/class/block/ram9/queue/discard_max_bytes 0
+/sys/class/block/sda/queue/discard_max_bytes 34359734272
+/sys/class/block/sdb/queue/discard_max_bytes 34359734272
+/sys/class/block/sdc/queue/discard_max_bytes 34359734272
+/sys/class/block/zram0/queue/discard_max_bytes 2199023255040
+
+# ext4/f2fs 挂载选项
+/dev/block/by-name/cache /cache ext4 rw,seclabel,nosuid,nodev,noatime,noauto_da_alloc 0 0
+/dev/block/dm-10 /data f2fs rw,lazytime,seclabel,nosuid,nodev,noatime,background_gc=on,discard,no_heap,user_xattr,inline_xattr,acl,inline_data,inline_dentry,flush_merge,extent_cache,mode=adaptive,active_logs=6,reserve_root=32768,resuid=0,resgid=1065,inlinecrypt,alloc_mode=default,checkpoint_merge,fsync_mode=nobarrier 0 0
