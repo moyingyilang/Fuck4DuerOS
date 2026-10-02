@@ -35,10 +35,13 @@ if [ "$(getprop ro.adb.secure)" != "1" ]; then
 fi
 
 # ---------- 3. 重新启用被 ROM 禁用的系统页面 ----------
+# 只处理「ROM 禁用、且没有其它工具在管」的组件。
+# 刻意不含 NavigationBarSettingsActivity / UserSettingsActivity：
+# 这两个列在 Scene（com.omarea.vtools）的 scene_app_contents 数据库里，
+# 说明是用户自己在 Scene 里禁用的，开机后 Scene 会重新禁用；
+# 去抢既没意义也不尊重用户配置。要恢复请在 Scene 侧调整。
 COMPONENTS="
 com.android.settings/.Settings\$DevelopmentSettingsDashboardActivity
-com.android.settings/.Settings\$NavigationBarSettingsActivity
-com.android.settings/.Settings\$UserSettingsActivity
 com.android.traceur/.StorageProvider
 com.android.traceur/.QsService
 "

@@ -91,13 +91,30 @@ IO         sda/sdb/sdc  scheduler=mq-deadline  read_ahead_kb=128  nr_requests=62
 > 没有这个文件），脚本会打印 `skip` 并继续，不是失败。
 > 拥塞控制只有 `reno cubic`，没有 `bbr`，未做改动。
 
-### 2.4 内存 / VM
+### 2.4 内存 / VM —— 归 Scene 管理，本模块刻意不设
 
-| sysctl | 前 | 后 | 目的 |
-| --- | --- | --- | --- |
-| `vm.vfs_cache_pressure` | 150 | 100 | 少驱逐 inode/dentry 缓存 |
-| `vm.dirty_writeback_centisecs` | 10000（100 秒） | 500（5 秒） | 脏页平滑回写，避免攒一波造成卡顿 |
-| `vm.dirty_expire_centisecs` | 5000 | 3000 | 同上 |
+`scene_swap_controller` 的 `startup.sh` 里有一段明确的取舍（含原作者注释）：
+
+```sh
+echo "设置cache"
+# 降低了读写缓存，对于目前的UFS3闪存来说，IO性能足够，
+# 并不需要太多内存缓存来提高性能
+set_value 5    /proc/sys/vm/dirty_background_ratio
+set_value 10   /proc/sys/vm/dirty_ratio
+set_value 5000 /proc/sys/vm/dirty_expire_centisecs
+set_value 10000 /proc/sys/vm/dirty_writeback_centisecs
+set_value 150  /proc/sys/vm/vfs_cache_pressure
+```
+
+它的 `service.sh` 在 `duer_optimize` 之后执行，会把这几项覆盖掉；
+而这些参数直接影响换页/回写策略，硬抢会与 Scene 的 swap 设计打架。
+
+**因此 `duer_optimize` 刻意不设这三项**，`scripts/optimize.sh` 里仍保留
+（手动执行时可用），但要注意重启后会被 Scene 覆盖。
+
+> 这一条是重启实测后才发现并纠正的：此前文档把
+> `vfs_cache_pressure` / `dirty_writeback_centisecs` / `dirty_expire_centisecs`
+> 列为"已优化"，实际开机后都被 Scene 打回原值。
 
 ### 2.5 内核信息暴露
 
@@ -131,9 +148,9 @@ python3 scripts/compare_bench.py \
 | **/data/log 占用** | **225 MB** | **47 MB** |
 | sda scheduler | mq-deadline | none |
 | sda read_ahead_kb | 128 | 512 |
-| vm.vfs_cache_pressure | 150 | 100 |
-| vm.dirty_writeback_centisecs | 10000 | 500 |
-| vm.dirty_expire_centisecs | 5000 | 3000 |
+| vm.vfs_cache_pressure | 150 | 150（Scene 覆盖，见 2.4） |
+| vm.dirty_writeback_centisecs | 10000 | 10000（Scene 覆盖） |
+| vm.dirty_expire_centisecs | 5000 | 5000（Scene 覆盖） |
 | kernel.dmesg_restrict | 0 | 1 |
 | tcp_slow_start_after_idle | 1 | 0 |
 | tcp_fastopen | 1 | 3 |
@@ -181,6 +198,45 @@ Linux 里 **priority 数值越大越先使用**。swapfile 的 0 高于 zram 的
 把 zram 的优先级调到高于 swapfile 即可。这属于你的配置选择，脚本没有代劳。
 
 ---
+
+## 4.5 重启实测（2026-10-02 20:07）
+
+模块的开机钩子做了真实重启验证，两个模块都按预期执行：
+
+```text
+duer_devrestore:
+  [20:07:55] [post-fs-data] ro.boot.skuid: 600WW -> 0（恢复 ADB 授权弹窗）
+  [20:07:55] [post-fs-data] ro.adb.secure 已经是 1
+  [20:09:18] [service] sepolicy: allow system_app logpersistd_logging_prop property_service set
+  [20:09:18] [service] sepolicy: allow system_app logpersistd_logging_prop file { open read }
+  [20:09:19] [service] service.adb.tcp.port -> 5555（无线 adb 已恢复）
+
+duer_optimize:
+  [20:07:55] [post-fs-data] io sda/sdb/sdc scheduler=none, read_ahead_kb=512
+  [20:09:23] [service] ctl.stop kernel_log / logcat_log / log_size_control
+  [20:09:23] [service] 网络参数 + kernel.dmesg_restrict
+  [20:09:23] [service] 动画缩放 -> 0.5
+```
+
+重启后逐项核对：
+
+| 项目 | 结果 |
+| --- | --- |
+| 无线 adb | 开机约 145 秒后自动恢复，`<已隐去的内网地址>:5555 device` |
+| `ro.adb.secure` | 1（模块生效） |
+| `ro.boot.skuid` | 0（模块生效，授权弹窗可用了） |
+| `adb_enabled` | 1 |
+| 百度日志三个服务 | stopped / stopped / stopped |
+| sda scheduler / read_ahead | none / 512 |
+| kernel.dmesg_restrict | 1 |
+| tcp_fastopen | 3 |
+| 动画缩放 | 0.5 |
+| 开发者选项 | 解析到真实页面 `DevelopmentSettingsDashboardActivity` |
+| **VM 三项** | **被 Scene 打回原值**（已按 2.4 处理） |
+| **导航栏/多用户页面** | **被 Scene 重新禁用**（见 restore-removed-pages.md 2.5） |
+
+> 顺带确认：`service.adb.tcp.port` 是 `service.*` 非持久属性，重启即丢；
+> 不补这一段的话重启后只剩 USB 通道，很容易被误判成"改坏了"。
 
 ## 5. 回滚
 

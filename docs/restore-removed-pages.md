@@ -286,8 +286,8 @@ su -c 'abx2xml /data/system/users/0/package-restrictions.xml /data/local/tmp/pr.
 | --- | --- |
 | `com.android.settings.Settings$DevelopmentSettingsDashboardActivity` | **开发者选项（整页）** |
 | `com.android.traceur.StorageProvider` / `QsService` | **系统跟踪 System Tracing** |
-| `com.android.settings.Settings$NavigationBarSettingsActivity` | 导航栏设置 |
-| `com.android.settings.Settings$UserSettingsActivity` | 多用户设置 |
+| `com.android.settings.Settings$NavigationBarSettingsActivity` | 导航栏设置（**Scene 也在管，未恢复**，见 2.5） |
+| `com.android.settings.Settings$UserSettingsActivity` | 多用户设置（**Scene 也在管，未恢复**，见 2.5） |
 | `com.android.permissioncontroller.role.ui.SpecialAppAccessListActivity` | 特殊应用访问权限 |
 | `com.android.settings.CryptKeeper` | 加密密码界面（**未动**，属启动路径） |
 | `com.android.provision.DefaultActivity` | 开机向导（**未动**） |
@@ -327,6 +327,28 @@ cmd package resolve-activity --brief -a android.settings.APPLICATION_DEVELOPMENT
 其组件状态不通过常规 `pm enable` 持久化。目前未找到不修改 APEX 的解决办法。
 
 ---
+
+### 2.5 有两个页面我刻意没动（它们归 Scene 管）
+
+重启实测时发现：`NavigationBarSettingsActivity` 与 `UserSettingsActivity`
+被重新禁用了，而 `DevelopmentSettingsDashboardActivity`（开发者选项）没有。
+
+追查结果：这两个组件名出现在 **Scene（`com.omarea.vtools`）的
+`databases/scene_app_contents`** 里——也就是说，是**用户自己在 Scene 里禁用**的，
+Scene 会在开机后重新应用。没有任何 ROM 侧或模块侧脚本涉及它们。
+
+所以 `duer_devrestore` 的组件清单里**刻意移除了这两个**：
+
+```
+COMPONENTS="
+com.android.settings/.Settings$DevelopmentSettingsDashboardActivity   ← ROM 禁用，已恢复
+com.android.traceur/.StorageProvider                                  ← ROM 禁用，已恢复
+com.android.traceur/.QsService                                        ← ROM 禁用，已恢复
+"
+```
+
+理由：去抢一份用户自己配置的禁用名单，既会在每次开机产生无意义的反复，
+也不尊重用户的设置。**要恢复请在 Scene 里取消勾选**，或把它们加回上面的清单。
 
 ## 3. 回滚
 

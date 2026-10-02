@@ -65,9 +65,14 @@ sysctl_set /proc/sys/net/ipv4/conf/all/send_redirects 0
 # ---------------------------------------------------------------------------
 # 3. 内存 / VM（swappiness 与 zram/swap 交给 Scene，不在这里动）
 # ---------------------------------------------------------------------------
-sysctl_set /proc/sys/vm/vfs_cache_pressure 100
-sysctl_set /proc/sys/vm/dirty_writeback_centisecs 500
-sysctl_set /proc/sys/vm/dirty_expire_centisecs 3000
+# 下面三条 VM 参数**刻意不设**：
+# scene_swap_controller 的 startup.sh 会明确写入
+#   dirty_background_ratio=5 / dirty_ratio=10
+#   dirty_expire_centisecs=5000 / dirty_writeback_centisecs=10000
+#   vfs_cache_pressure=150
+# 注释里写明是为 UFS3 做的取舍；它的 service.sh 在本模块之后执行，
+# 设了也会被覆盖，硬抢会与用户的换页策略打架。
+# 需要时用 scripts/optimize.sh 手动应用，或直接改 Scene 配置。
 
 # ---------------------------------------------------------------------------
 # 4. 内核信息暴露收紧（非 root 应用不能读 dmesg）

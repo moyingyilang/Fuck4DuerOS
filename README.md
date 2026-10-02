@@ -98,7 +98,7 @@ adb shell "su -c 'rm -rf /data/adb/modules/duer_optimize /data/adb/modules/duer_
 | --- | --- |
 | `modules/duer_cleanup` | 净化：`.replace` 掉 PCDN/Duerguard/GoodFather 等，hosts 屏蔽上报域名，禁用通讯劫持组件 |
 | `modules/duer_optimize` | 优化：关闭百度持久化日志、UFS IO / 网络 / VM 调优、动画 0.5x |
-| `modules/duer_devrestore` | 恢复：`ro.adb.secure=1`（ADB 授权）、`adb_enabled=1` + USB ADB、重新启用被 ROM 禁用的系统页面、补 SELinux 策略修复开发者选项闪退 |
+| `modules/duer_devrestore` | 恢复：`ro.adb.secure=1`（ADB 授权）、`adb_enabled=1` + USB ADB、重新启用被 ROM 禁用的系统页面、补 SELinux 策略修复开发者选项闪退（与 Scene 冲突的项刻意不抢） |
 
 安装：`./scripts/install_module.sh <模块目录名>`
 
