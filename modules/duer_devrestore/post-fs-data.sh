@@ -15,6 +15,28 @@ MODDIR=${0%/*}
 LOG=/data/local/tmp/duer_devrestore.log
 log() { echo "[$(date '+%m-%d %H:%M:%S')] [post-fs-data] $*" >> "$LOG"; }
 
+# ---------------------------------------------------------------------------
+# 关键：绕开 ROM 用 SKU 值静默吞掉授权弹窗的行为
+#
+# SystemUI 的 UsbDebuggingActivity.onCreate 末尾有这么一段（dexdump 反汇编）：
+#
+#     00e0: const-string v0, "600WW"
+#     00e2: v0.equals(v7)        // v7 = ro.boot.skuid
+#     00e6: if-eqz v7, 00ee      // 不相等 -> 00ee: return-void（保留弹窗）
+#     00e8: notifyService(v2)    // 相等   -> 通知服务
+#     00eb: finish()             //          并立刻关闭弹窗
+#     00ee: return-void          // 只有 skuid != 600WW 才走这里
+#
+# 这台设备的 ro.boot.skuid 恰好是 600WW，所以授权弹窗永远不显示，
+# 陌生主机只会一直停在 unauthorized。
+# 把它改成别的值即可走回正常分支，弹窗恢复。
+# ---------------------------------------------------------------------------
+SKU=$(getprop ro.boot.skuid)
+if [ "$SKU" = "600WW" ]; then
+    resetprop ro.boot.skuid 0 2>/dev/null
+    log "ro.boot.skuid: 600WW -> $(getprop ro.boot.skuid)（恢复 ADB 授权弹窗）"
+fi
+
 CUR=$(getprop ro.adb.secure)
 if [ "$CUR" != "1" ]; then
     resetprop ro.adb.secure 1 2>/dev/null

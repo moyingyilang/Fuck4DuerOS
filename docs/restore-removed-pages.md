@@ -67,83 +67,127 @@ HOME=/tmp/fakehome adb -P 5038 connect <设备IP>:5555
 # 结果：连接挂起、不进 devices 列表 —— 说明 adbd 在等授权（修复前会被直接放行）
 ```
 
-### 1.4 弹窗为什么在无线下不出现（实测）
+### 1.4 真正的元凶：`ro.boot.skuid == "600WW"`
 
-这一节是踩了很多次坑之后才搞清楚的，记录完整结论，避免后人重复。
+前面几节只解决了"adbd 要不要鉴权"的问题。把 `ro.adb.secure` 改回 1 之后，
+陌生主机的状态确实变成了 `unauthorized`——**但弹窗始终不出现**，一直卡在未授权。
 
-**（1）`UsbDebuggingActivity` 一直存在，也**没有**被禁用。**
-起初用 `strings` 扫 SystemUI 的 `AndroidManifest.xml` 没找到它，差点得出
-"ROM 把界面删了"的结论；换 `aapt2` 精确解析后发现组件一直在：
+把 SystemUI 的 `UsbDebuggingActivity.onCreate` 完整反汇编后，找到了原因：
+
+```text
+00e0: const-string v0, "600WW"
+00e2: invoke-virtual {v0, v7}, Ljava/lang/String;.equals      // v7 = ro.boot.skuid
+00e5: move-result v7
+00e6: if-eqz v7, 00ee        // skuid != "600WW"  ->  00ee: return-void（弹窗保留）
+00e8: invoke-direct {v6, v2}, notifyService:(Z)V              // skuid == "600WW"
+00eb: invoke-virtual {v6}, AlertActivity;.finish:()V          //   -> 通知服务并立刻关闭
+00ee: return-void            // 只有 skuid != "600WW" 才会走到这里
+```
+
+`notifyService` 的实现（同一份反汇编）：
+
+```text
+IAdbManager.allowDebugging:(ZLjava/lang/String;)V    // allow == true
+IAdbManager.denyDebugging:()V                        // allow == false
+```
+
+**这台设备的 `ro.boot.skuid` 恰好是 `600WW`，所以 ROM 的定制分支直接
+`notifyService(...) + finish()`，弹窗被静默吞掉，永远不会显示。**
+陌生主机只会一直停在 `unauthorized`，而且没有任何提示。
+
+这比 `ro.adb.secure` 隐蔽得多：`ro.adb.secure=0` 只是"不要求鉴权"，
+而这段代码是"要求鉴权、但把授权界面掐掉"。
+
+### 1.5 处置与端到端验证
+
+`ro.boot.skuid` 是 `ro.*` 属性，Magisk 的 `resetprop` 可以覆盖。改成任意
+非 `600WW` 的值，`onCreate` 就会走到 `00ee: return-void`，弹窗恢复：
+
+```bash
+resetprop ro.boot.skuid 0
+```
+
+因为 `am start` 会被 `not exported` 拦住（见 1.6），无法手工触发，
+所以验证方式是**在被控机本地预先安排好"点允许"的动作**，再让陌生密钥去连 USB：
+
+- 被控机上用 `setsid` 把点击脚本从 adb 会话里摘出来（`PPID=1`），
+  这样 adb 断了它照样跑；
+- 脚本轮询 `dumpsys window` 等弹窗，用 `uiautomator dump` 解析按钮坐标，
+  再 `input tap`；
+- 主机侧用一个全新密钥的 adb server 走 USB 发起连接。
+
+实测结果（原始日志见 `evidence/device-xd-see00-2301/optimize/adb-dialog/`）：
+
+```text
+[20:01:13] 启动
+[20:01:18] 等 5s 后弹窗出现
+text="允许 USB 调试吗？"
+text="一律允许使用这台计算机进行调试"
+text="允许"
+text="取消"
+text="这台计算机的 RSA 密钥指纹如下：<已隐去的主机密钥指纹>"
+[20:01:24] tap -> 359,867    (复选框「一律允许」)
+[20:01:26] tap -> 582,993    (按钮「允许」)
+[20:01:28] 弹窗已消失，完成
+```
+
+设备侧密钥表随即多出一条（说明"一律允许"生效、密钥被永久写入）：
+
+```text
+[1] a918d6f7272fc644  ...u0_a446@localhost   ← 原有
+[2] 361176c6b0fc7226  ...root@localhost      ← 本次弹窗授权的
+```
+
+主机侧状态由 `unauthorized` 变为 `device`。
+
+**结论：ADB 授权弹窗已经真正恢复，并且经过完整的端到端验证。**
+
+### 1.6 两个容易踩的坑
+
+**（1）弹窗组件是非导出的，不能用 `am start` 测。**
+它声明了 `android:permission="android.permission.MANAGE_DEBUGGING"` 且
+`exported=false`，只有 `system_server` 能拉起：
+
+```text
+SecurityException: Permission Denial: starting Intent {
+  cmp=com.android.systemui/.usb.UsbDebuggingActivity } from null (uid=2000)
+  not exported from uid 10124
+```
+
+所以此前所有"用 am start 试弹窗"的结论都不可靠。
+
+**（2）检查 manifest 必须用 aapt2，不能用 strings。**
+`strings` 扫二进制 AXML 会漏掉 `UsbDebuggingActivity`，我因此一度误判
+"ROM 把界面删了"，差点去自己重写一个。
 
 ```bash
 aapt2 dump xmltree --file AndroidManifest.xml SystemUI.apk | grep -i usb
-#   com.android.systemui.usb.UsbDebuggingActivity
-#   com.android.systemui.UsbDebuggingActivityAlias  (targetActivity 同上)
-#   com.android.systemui.usb.UsbDebuggingSecondaryUserActivity
 ```
 
-> `strings` 对二进制 AXML 会漏。**检查 manifest 必须用 aapt2。**
+### 1.7 关于无线（TCP）通道
 
-**（2）它是非导出组件，只有 `system_server` 能拉起。**
-试图用 `am start` 手动验证时，拿到的是完整堆栈：
-
-```
-SecurityException: Permission Denial: starting Intent {
-  cmp=com.android.systemui/.usb.UsbDebuggingActivity } from null (pid=..., uid=2000)
-  not exported from uid 10124
-    at ActivityTaskSupervisor.checkStartAnyActivityPermission
-```
-
-也就是说：**任何用 `am start` 手动测试"弹窗出没出来"的尝试都不可能成功**，
-这个界面只接受系统进程的启动请求。
-
-**（3）TCP / 无线通道根本不走授权确认。**
-把手机连上 USB、打开 USB ADB 后，用另一把全新密钥（独立 adb server、独立端口）
-发起无线连接，adbd 直接返回：
-
-```
-failed to authenticate to <已隐去的内网地址>:5555
-```
-
-**没有弹窗、也不给确认机会**。原因是做确认的 `UsbDebuggingManager` 属于
-`UsbDeviceManager`，它服务的是 **USB 传输**。
+`UsbDebuggingManager` 属于 `UsbDeviceManager`，服务的是 **USB 传输**。
+实测用陌生密钥走 TCP 连接，adbd 直接返回 `failed to authenticate`，
+**不弹窗、也不给确认机会**：
 
 | 通道 | 陌生密钥的行为 |
 | --- | --- |
-| **USB** | 由 `system_server` 拉起 `UsbDebuggingActivity`，弹窗授权（原生行为） |
+| **USB** | 弹窗授权（修好 skuid 之后），可勾选"一律允许"永久写入 |
 | **TCP / 无线** | 直接 `failed to authenticate`，无弹窗 |
 
-**（4）弹窗的额外参数要求**（反汇编 `onCreate` 得到）：
+所以**授权新电脑请用 USB 线**；只有无线可用时，用 `scripts/adb_authorize.sh`
+直接写入公钥。
 
-```
-getStringExtra("fingerprints")  → 为 null 则直接 finish()
-getStringExtra("key")           → 为 null 则直接 finish()
-```
+### 1.8 顺带打开 USB 调试开关
 
-框架会同时传 `key` 和 `fingerprints`；只传 `key` 会走"参数不全→立刻退出"分支。
+ROM 里 `settings get global adb_enabled` 是 `0`——USB 插上电脑连 adb 接口都不会出现。
+模块把它置 1，系统随即把 USB 功能切换为 `mtp,adb`。
 
-**（5）结论与可用路径：**
+### 1.9 主机侧的小坑（如果用 Termux 当 adb 主机）
 
-- 修复 `ro.adb.secure=1` 是恢复授权机制的关键（见 1.3），也是唯一被 ROM 改掉的地方；
-- **要授权新电脑，用 USB 线连**，弹窗会正常出现（标准 Android 行为）；
-- 只有无线可用时，用 `scripts/adb_authorize.sh` 直接写入公钥；
-- 无线场景下，未被授权的密钥会被直接拒绝，这是预期行为，不是故障。
-
-### 1.5 顺带把 USB 调试开关打开
-
-ROM 里 `settings get global adb_enabled` 是 `0`——USB 插上电脑连 adb 接口都不会出现，
-自然永远走不到授权那一步。模块会把它置 1，系统随即把 USB 功能切换为 `mtp,adb`：
-
-```
-adb_enabled   = 1
-sys.usb.config = mtp,adb
-```
-
-### 1.6 一个主机侧的小坑（如果你也用 Termux 当 adb 主机）
-
-在 Android 手机上跑 adb 去连另一台手机时，adb 会读不到 USB 设备：
-`/dev/bus/usb/001/00X` 属主是 `root:usb`，而 Termux 应用不在 `usb` 组，
-且 SELinux 也拦 `untrusted_app` 访问该节点。两个办法：
+在 Android 手机上跑 adb 去连另一台手机时，adb 读不到 USB 设备：
+`/dev/bus/usb/001/00X` 属主是 `root:usb`，Termux 应用不在 `usb` 组，
+SELinux 也拦 `untrusted_app` 访问该节点。两个办法：
 
 ```bash
 # 办法一：放开节点权限（每次重新枚举后 devnum 会变）
@@ -156,9 +200,10 @@ su -c 'HOME=/data/local/tmp/adbroot adb start-server'
 ```
 
 注意 root 的 `HOME` 是 `/`（只读），直接 `su -c adb start-server` 会因
-`Cannot mkdir '//.android'` 而崩，必须给它一个可写的 `HOME`。
+`Cannot mkdir '//.android'` 而崩，必须给它可写的 `HOME`。
 
----
+另外 **adbd 同时只接受一条 TCP 传输**：如果已经有一个 adb server 占着，
+第二个 server 的 `adb connect` 会超时——排错时别误以为是网络问题。
 
 ## 2. 被禁用的系统页面
 
