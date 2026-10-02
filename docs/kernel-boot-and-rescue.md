@@ -298,3 +298,79 @@ e8 4e  (PID)          出现 4 次
 
 `first_mode` 字段的具体偏移尚未定位到（需进一步反汇编
 `get_miscdata_boot_flag` 的调用点）。
+
+---
+
+# 补充：`cboot` 模式选择逻辑已被移除（2026-10-02 22:0x）
+
+## 现象
+
+在载荷偏移 `0x9b497`、`0x9b4cd`、`0x9b8f8`、`0xa36c6` 处的这四个字符串
+
+```text
+0x9b497  'Detect the firsrt_mode flag in the miscdata partition'
+0x9b4cd  'get mode from firstmode field: %s\n'
+0x9b8f8  'cboot;cboot fastboot'
+0xa36c6  'first_mode=%x'
+```
+
+在**整个载荷（[0x40, 0xe6358)）里找不到任何引用**：
+
+```text
+测试项                        ADRP+ADD  ADRP+LDR  ADR  8字节绝对指针  4字节
+get mode from firstmode field     0         0     0        0         0
+Detect the firsrt_mode flag       0         0     0        0         0
+cboot;cboot fastboot              0         0     0        0         0
+first_mode=%x                     0         0     0        0         0
+--- 对照 ---
+get_miscdata_boot_flag            7处        -     -        1         1
+```
+
+扫描器已覆盖四种取址模式（`ADRP+ADD`、`ADRP+ADD.W`、`ADRP+LDR`、
+`ADR`），ADD 与 ADRP 的间隔放宽到 1~8 条，并处理了 `sh=1` 的
+`add x, x, #imm, lsl #12` 形式。**不是扫描器的问题。**
+
+## 交叉验证
+
+`0x9f0a96c6` 的 `first_mode=%x` 按设计是用来拼 bootargs 片段的
+（它的邻居是 `cali_mode=%x`、`earlycon=...`、` androidboot.skuid=%s`）。
+而实际启动时读到的 `/proc/cmdline` 是：
+
+```text
+earlycon console=ttySPRD1,115200n8 loop.max_part=7 loglevel=7 init=/init
+root=/dev/ram0 rw ... androidboot.selinux=permissive
+androidboot.hardware=ums9230_1h10 ... androidboot.skuid=600WW
+androidboot.slot_suffix=_a androidboot.force_normal_boot=1 ...
+```
+
+**完全没有 `first_mode=`。**
+
+⇒ 与设备所有者用 Ghidra 分析时的结论一致：
+**这段模式选择实现已被从 uboot 中删除，只留下了字符串常量。**
+
+这解释了为什么：
+
+- `misc` 里写 `bootonce-bootloader` 后进入的模式（`18d1:4ee8`）
+  与标准 fastboot 不符；
+- 通过 `miscdata` 的 `first_mode` 字段安排启动模式这条路**不可用**。
+
+## 其它观察
+
+`/proc/cmdline` 里还有几个值得记录的字段：
+
+```text
+buildvariant=eng              ← 工程版构建（零售机不常见）
+androidboot.selinux=permissive
+androidboot.veritymode=enforcing
+androidboot.flash.locked=0    ← 真身：未锁定
+androidboot.vbmeta.device_state=unlocked
+initcall_debug=1
+root=/dev/ram0
+androidboot.dtbo_idx=1
+lcd_name=lcd_icnl9916_boe_mipi_hdp    ← 屏幕：ICNL9916
+lcd_size=1612x720
+```
+
+**注意**：屏幕型号是 `icnl9916`，而之前驱动覆盖比对时设备实际加载的触摸屏模块是
+`chipone_tddi_9916.ko`——两者都是 Chipone/ILITEK 系，命名相近，需注意区分
+（`icnl9916` 是驱动 IC 型号，`chipone-tddi` 是驱动目录名）。
