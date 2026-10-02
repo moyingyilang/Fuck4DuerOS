@@ -186,3 +186,115 @@ Interface 0 的 `ff/42/01` 是 **Android ADB 接口**的标识
 
 **仍需向设备所有者确认：这台设备平时用什么工具刷机**（定制的 uboot 通常配
 专用上位机，如展锐的 ResearchDownload / spd_dump，或作者自制的工具）。
+
+---
+
+# 补充：uboot 逆向分析（2026-10-02 21:48）
+
+## 固件身份
+
+`uboot_a` / `uboot_b`（各 3 MB，**两者 SHA256 完全相同**）：
+
+```text
+头部 magic:  "DHTB"  (44 48 54 42)  ← 展锐 bootloader 容器格式
+构建路径:    /root/jenkins_build/workspace/DuerShow_T616/t616/bsp/bootloader/u-boot15/...
+工具链:      aarch64-linux-gnu-gcc (Linaro GCC 4.8-2015.06) 4.8.5
+```
+
+**就是为 `DuerShow_T616`（本机）构建的展锐 U-Boot 2015 分支。**
+
+## 启动模式选择机制
+
+```text
+bootcmd=cboot normal
+bootdelay=0
+preboot=role                       ← role 命令决定 uboot 扮演 dloader 还是 cboot
+console=ttyS0,115200n8
+
+cboot                              ← U-Boot 命令
+choose boot mode
+mode:
+recovery, fastboot, dloader, charge, normal, vlx, caliberation.
+cboot could enter a mode specified by the mode descriptor.
+it also could enter a proper mode automatically depending on the environment
+cboot;cboot fastboot               ← 用法：cboot <mode>
+```
+
+相关函数与判据字符串：
+
+```text
+get_miscdata_boot_flag / set_miscdata_boot_flag
+Detect the firsrt_mode flag in the miscdata partition
+get mode from firstmode field: %s
+first_mode=%x
+Detect the recovery message in the misc partition
+check_reboot_mode:get raw reg_rst_mode is %x and sysdump_flag is %x
+save_reset_mode_after_dump / update_reset_mode_from_dump
+reset_mode : (%x)-(%s) .
+```
+
+⇒ **U-Boot 从 `miscdata` 分区的 `first_mode` 字段读启动模式**，
+另有 `misc` 分区的 recovery 消息、以及一个 reset mode 寄存器/标志。
+
+## U-Boot fastboot 的完整命令表
+
+```text
+   fastboot mode
+getvar:   download:   is-userspace   max-download-size
+flash:    erase:      powerdown
+reboot-bootloader
+reboot-fastboot          ← 支持在 fastboot 内重启回 fastboot
+reboot-recovery
+set_active:   setdump   getdump   flashing   getlcs   setrma   getsocid
+tokenp%d      socidp%d
+unknown reason / unknown command
+
+OEM 命令：
+  unlock_critical            get_unlock_ability
+  get_unlock_bootloader_nonce
+  unlock_bootloader          "Please firstly execute <fastboot oem get_identifier_token>"
+  getsecurityversion         getversions      backupnv
+```
+
+`unlock_bootloader` 的交互提示（含按键确认流程）也在其中，与
+`/proc/cmdline` 里 `device_state=unlocked` 相互印证——**这台机器的解锁
+就是用 U-Boot 的 fastboot OEM 命令做的**，所以 U-Boot fastboot 原本可用。
+
+## 两套 USB VID/PID 都在 uboot 里
+
+在 `uboot_a.img` 中按小端字节序列搜索：
+
+```text
+18 d1  (Google VID)   出现 4 次
+e8 4e  (PID)          出现 4 次
+82 17  (Unisoc VID)   出现 4 次
+03 40  (PID)          出现 9 次
+```
+
+⇒ uboot 同时定义了 `18d1:4ee8` 与 `1782:4003`。结合实测：
+
+- 正常 Android：`1782:4003`，接口 `06/01/01`(MTP) + `ff/42/01`(ADB)
+- `adb reboot bootloader` 后：`18d1:4ee8`，接口 `ff/42/01` + 3×`ff/00/00`
+
+**该模式下 Interface 0 是 `ff/42/01`，即 ADB 协议标识**（fastboot 应为 `ff/42/03`），
+但实测 adb 与 fastboot 均无响应。推测是**定制过的 uboot**在此模式下
+实现了非标准协议（与设备所有者「uboot 被改过」的说明一致）。
+
+## miscdata 分区实况（1 MB，/dev/block/sda2）
+
+```text
+偏移 0     "51PS<已隐去的序列号>"        序列号（51PS + SN）
+偏移 64    "<已隐去的设备 ID>"              另一组 ID
+偏移 132   12 00 00 00                       计数 = 18 (0x12)
+偏移 136   18 个 16 字节定长字符串（工厂测试模式名）：
+           DOWNLOAD WRITESN BT FT BBAT MMIF SMTCHECK MMI1 AGING
+           MMI2 ANTENNA CURRENT DUALCAME CAMEVFY AUDIO IMEI
+           FRESET CHKIMEI
+偏移 448   00 01 "PASS"
+偏移 9984  "~SET" + 数据
+偏移 10016 "enabled" / "disabled" / "autoreboot-enable"
+偏移 10112 "~~600WW"                         skuid
+```
+
+`first_mode` 字段的具体偏移尚未定位到（需进一步反汇编
+`get_miscdata_boot_flag` 的调用点）。
