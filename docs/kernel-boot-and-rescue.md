@@ -117,3 +117,72 @@ androidboot.force_normal_boot=1
 > 注意：`boot_a.img` 是**已打 Magisk 补丁**的版本（ramdisk 里是 magiskinit）。
 > 若要回到「未 root 的原始状态」，需要用 `magiskboot` 从 `.backup/init.xz`
 > 还原，或找厂商原厂包。
+
+---
+
+# 补充：bootloader 模式实测（2026-10-02 21:34-21:43）
+
+## 进入方式与 BCB 机制
+
+`adb reboot bootloader` 与 `svc power reboot bootloader`（Magisk 应用用的就是这条）
+效果相同。底层是往 `misc` 分区写 BCB 命令：
+
+```text
+dd if=/dev/block/by-name/misc  →  strings
+bootonce-bootloader
+BCAB
+```
+
+`bootonce-bootloader` 就是 Bootloader Control Block 的指令，说明 boot 目标
+是由 misc 分区控制的（同理可写 `boot-recovery` 强制进 recovery）。
+
+## 该模式下的 USB 描述符
+
+设备重新枚举为 **`18d1:4ee8`**（Google VID），完整描述符：
+
+```text
+idVendor   18d1      idProduct  4ee8      bcdDevice 0404
+manufacturer "Unisoc"          product "Unisoc Phone"
+serial       <已隐去的序列号>
+bNumInterfaces 4
+
+Interface 0: class ff  subclass 42  protocol 01   2 endpoints
+Interface 1: class ff  subclass 00  protocol 00   2 endpoints
+Interface 2: class ff  subclass 00  protocol 00   2 endpoints
+Interface 3: class ff  subclass 00  protocol 00   2 endpoints
+```
+
+Interface 0 的 `ff/42/01` 是 **Android ADB 接口**的标识
+（fastboot 应为 `ff/42/03`）。**但实测该接口既不响应 adb 也不响应 fastboot**：
+
+- `adb devices`（root server，已 chmod 666 节点）→ 空
+- `fastboot devices`（v37.0.0，root，绝对路径，已 chmod）→ 空
+
+结合设备所有者的说明「**这台设备的 uboot 被改过**」，可以判断：
+这个模式是**定制过的 uboot 暴露的非标准接口**，需要专用工具/协议，
+标准 adb/fastboot 都用不了。
+
+## 安全性观察：该模式会自动退出
+
+两次实测（21:34、21:40）中，设备在 `18d1:4ee8` 停留约 1~5 分钟后**自行重启回 Android**：
+
+```text
+21:34  reboot bootloader  →  18d1:4ee8
+21:35  ...持续...
+21:36  设备自动回到 1782:4003（Android），sys.boot_completed=1
+
+21:40  svc power reboot bootloader  →  18d1:4ee8 (Device 042/044)
+21:43  回到 1782:4003，无线 adb 恢复
+```
+
+**这本身是一道保险**：即使误入该模式，设备会自己回来，不会永久卡住。
+
+## 由此对救援方案的修正
+
+| 原判断 | 修正 |
+| --- | --- |
+| fastboot 可用（因为解锁过） | **未证实**。`18d1:4ee8` 模式下标准 fastboot 不通，需要专用工具 |
+| 标准 fastboot 刷 boot 回退 | 待确认——取决于改过的 uboot 支持什么 |
+
+**仍需向设备所有者确认：这台设备平时用什么工具刷机**（定制的 uboot 通常配
+专用上位机，如展锐的 ResearchDownload / spd_dump，或作者自制的工具）。
