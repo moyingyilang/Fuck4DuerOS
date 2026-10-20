@@ -652,3 +652,98 @@ ADRP@0x76d8 (X21) + ADD@0x76ec (X0)  [间隔 5]
 - [ ] 10 个处理器各自登记到栈表的哪个索引（决定了模式号 → 处理函数的映射）
 - [ ] `0x9f03d6a8`（无处理时调用的函数）做什么
 - [ ] 阶段三的 `mode-2` 偏移为何是 2（是否 mode 0/1 是保留值）
+
+---
+
+## 进度：P1 —— 启动模式探测链完整还原（Round 8）
+
+### 新工具 `tools/fnstr.c`
+
+给定一个地址区间，列出其中所有 `ADRP+ADD` 引用的字符串。
+相比 `funcmap`（只列有字符串的函数），`fnstr` 可按任意范围枚举，
+适合逐个分析处理器。
+
+### 10 个处理器的用途（按表顺序）
+
+`fnstr` 按地址递增输出，序列对应各处理器：
+
+| 序 | 地址 | 探测来源 | 字符串 |
+| --- | --- | --- | --- |
+| 1 | `0x9f007228` | **miscdata 的 `first_mode`** | `Detect the firsrt_mode flag in the miscdata partition` |
+| 2 | `0x9f007290` | **misc 的 recovery 消息** | `Detect the recovery message in the misc partition` |
+| 3 | `0x9f0072ac` | 同上（这段的延续 / 或首个处理器的另一半） | 同上 |
+| 4 | `0x9f0072fc` | 关机充电 | `in charging during shutdown the devices` |
+| 5 | `0x9f007330` | 充电器连接 / **按键** | `Charger connected`、`Keypad trigger to recovery` |
+| 6 | `0x9f0073dc` | 看门狗 + 关机闹钟 | `Watchdog reset pending and poweroff alarm` |
+| 7 | `0x9f0071c8` | 看门狗异常 | `Watchdog reset pending but Shutdown alarm is abnormal` |
+| 8 | `0x9f007440` | RTC 闹钟到期 | `RTC poweroff alarm expiry` |
+| 9 | `0x9f00749c` | 关机充电（另一种） | `in charging during shutdown the devices` |
+| 10 | `0x9f007558` | **按键触发 recovery** | `Keypad trigger to recovery` |
+
+### 完整的启动模式探测链
+
+```
+for handler in [0x9f007228, 0x9f007290, 0x9f0072ac, 0x9f0072fc,
+                0x9f007330, 0x9f0073dc, 0x9f0071c8, 0x9f007440,
+                0x9f00749c, 0x9f007558]:
+    ret = handler()
+    if ret != 0: return ret        # 命中，结束
+return 0                            # 全部未命中
+```
+
+**探测顺序（按代码顺序）：**
+
+1. `miscdata` 的 `first_mode` 字段
+2. `misc` 分区的 recovery 消息
+3. 关机充电状态
+4. 充电器连接状态
+5. **按键触发 recovery** ← 音量键
+6. 看门狗复位 + 关机闹钟
+7. 看门狗复位但关机闹钟异常
+8. RTC 关机闹钟到期
+
+### 对「按键失效」的最终解释
+
+**按键探测确实在链上（第 5 项），但它不是第一个被检查的。**
+
+前面四项（`first_mode`、misc recovery 消息、充电状态、充电器）**任意一个命中**
+就会提前返回，不再执行到按键探测。
+
+而设备正常启动时：
+
+```
+first_mode    → MFS 魔数不匹配 → 未命中，继续
+misc recovery → BCB 是空的     → 未命中，继续
+充电状态      → 正常            → 未命中，继续
+充电器        → 未接            → 未命中，继续
+按键          → ★ 本该在这里检查
+```
+
+所以理论上按键探测**应该**会执行到。那么「按键无效」的原因就不在探测链，
+而在**探测链之前**——即 `FUN_00005858` 里那个 `cmp w4, #1; b.le` 的提前返回。
+
+**两者并不矛盾**：`FUN_00005858` 是**按键本身的初始化/扫描函数**，
+它在模式参数 `w4 <= 1` 时直接跳过扫描；而探测链的第 5 项调用它时，
+如果 `w4 <= 1` 就会拿到「无按键」的结果。
+
+⇒ **`w4` 才是根因。** 而 `w4` 来自分发器的 `w2`（模式号）。
+而分发器的 `w2` 又来自……**它的调用者**。
+
+这就是下一轮必须回答的问题：**谁调用 `0x9f00763c`，传的 `w2` 是什么。**
+
+### 与 MFS 的关系（明确了）
+
+`first_mode` 是探测链的**第一项**。所以：
+
+- 写入 MFS 魔数 → 第 1 项命中 → **直接返回模式号，整个链短路**
+- 不需要管按键、不需要管 BCB、不需要管充电状态
+
+**这确认了「写 4 字节 miscdata」这条路的价值**：它是优先级最高的探测源。
+
+但前提是**分发器确实被调用**，且 `w2` 的取值不影响。
+
+### 待查
+
+- [ ] **谁调用分发器 `0x9f00763c`，`w2` 是什么** ← 最关键
+- [ ] `first_mode` 探测函数（`0x9f007228`）返回的模式号是多少
+- [ ] 探测链的返回值如何映射到阶段三的 `mode-2` 索引
