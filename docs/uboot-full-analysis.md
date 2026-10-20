@@ -850,3 +850,100 @@ b.le  返回 -1                      ; w4=2 > 1 → 不提前返回 ✓
 而用户想要的「按住音量键进 fastboot」，在这台设备上**需要先让设备进入
 异常启动状态**（例如 BCB 里写了 recovery、或 miscdata 的 first_mode 命中）
 ——这正好解释了为什么 `adb reboot bootloader` 能进、而按键不能。
+
+---
+
+## 进度：P1/P7 —— 按键子系统反汇编（Round 10）
+
+### 定位方法
+
+`[gpio keys] init skip!` 与 `[eic keys] volumeup` 两个字符串的引用点：
+
+```bash
+./adrp_xref uboot_a.img 0x9a62c
+→ ADRP@0x4a44 (X0) + ADD@0x4a4c (X0)     ; 绝对地址 0x9f004a44
+
+./adrp_xref uboot_a.img 0x9a644
+→ ADRP@0x4a80 (X0) + ADD@0x4a9c (X0)     ; 绝对地址 0x9f004a80 / 0x9f004a9c
+```
+
+> 注意：`adrp_xref` 的目标参数是**载荷相对偏移**（`abs - 0x9f000000`），
+> 不是文件偏移。这一轮在这里又踩了一次。
+
+### 两个相关函数
+
+**函数 A @ `0x9f004a24`** —— GPIO 按键初始化
+
+```asm
+0x9f004a24  stp x29, x30, [sp, -0x10]!
+0x9f004a28  mov w1, 0x7c
+0x9f004a2c  mov x29, sp
+0x9f004a30  mov x0, 0
+0x9f004a34  bl  0x9f04caf0                ; 某个初始化
+0x9f004a38  mov w1, 0x7c
+0x9f004a3c  mov x0, 0
+0x9f004a40  bl  0x9f04ca2c
+0x9f004a44  adrp x0, 0x9f09a000
+0x9f004a4c  add  x0, x0, 0x62c             ; "[gpio keys] init skip!"
+0x9f004a50  b    0x9f01270c               ; 打印
+```
+
+**函数 B @ `0x9f004a54`** —— EIC 读取音量上键
+
+```asm
+0x9f004a54  stp x29, x30, [sp, -0x20]!
+0x9f004a58  mov w0, 0xa4                    ; ★ EIC 通道 0xa4
+0x9f004a64  bl  0x9f04cefc                  ; EIC 配置
+0x9f004a68  mov x0, 0xbb8
+0x9f004a6c  bl  0x9f07f33c                  ; 延时 3000（0xbb8 ms）
+0x9f004a70  mov w0, 0xa4
+0x9f004a74  bl  0x9f04ce80                  ; ★ sprd_eic_get(0xa4)
+0x9f004a78  cmp w0, wzr
+0x9f004a7c  b.ge 0x9f004aa8                 ; >= 0 → 成功路径
+0x9f004a80  adrp x0, 0x9f09a000
+0x9f004a88  add  x1, x1, 0x8e0              ; 另一字符串（"%s: %s"？）
+0x9f004a8c  add  x0, x0, 0x247
+0x9f004a90  mov w19, 0
+0x9f004a94  bl  0x9f01270c                  ; 打印前半
+0x9f004a98  adrp x0, 0x9f09a000
+0x9f004a9c  add  x0, x0, 0x644              ; "[eic keys] volumeup : … ERROR!"
+0x9f004aa0  bl  0x9f01270c                  ; 打印后半
+
+0x9f004aa8  mov  w19, 0x73                  ; 's'
+0x9f004aac  csel w19, w19, wzr, ne
+```
+
+### ⚠️ 这是第二个独立的根因
+
+之前（Round 9）的结论是：`w4 <= 1` 导致按键扫描被跳过（设计行为）。
+
+**现在发现还有一层：即使扫描被执行，`sprd_eic_get(0xa4)` 本身也可能失败。**
+
+```
+[gpio keys] init skip!                     ← 初始化被跳过
+[eic keys] volumeup : sprd_eic_get ERROR!   ← 读取失败
+```
+
+两者是**不同位置的两个问题**：
+
+| 层 | 位置 | 现象 | 性质 |
+| --- | --- | --- | --- |
+| 逻辑层 | `FUN_00005858` 的 `cmp w4,#1; b.le` | 整个扫描被跳过 | 设计行为（正常启动不扫按键） |
+| 驱动层 | `0x9f004a54` 的 `sprd_eic_get(0xa4) < 0` | EIC 通道读不到 | **可能是真故障** |
+
+### 待查
+
+- [ ] `0xa4` 是否确实是音量上键的 EIC 通道号
+- [ ] `sprd_eic_get` 返回负值的具体原因（通道未配置？EIC 未初始化？）
+- [ ] 函数 A 打印 "init skip!" 的原因——它调用了 `0x9f04caf0` 与 `0x9f04ca2c`
+      但没有检查返回值就直接打印跳过
+- [ ] 函数 A 与函数 B 的调用关系（谁先谁后）
+- [ ] `0x9f0908e0` 处那个字符串是什么（函数 B 打印的前半部分）
+
+### 意义
+
+如果驱动层确实有故障（EIC 读不到），那么**即使解决了 `w4` 的门控，按键仍然无效**。
+这意味着「按住音量键进 fastboot」在这台设备上**可能根本不可行**，而不只是被设计隐藏。
+
+而 BCB 那条路（`boot-recovery` + `--fastboot`）已经实测可用，且不依赖按键——
+**这是两条独立的路，BCB 那条至少是通的。**
