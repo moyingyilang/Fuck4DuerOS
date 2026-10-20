@@ -6,7 +6,7 @@
 
 static uint8_t *buf; static size_t fsz, code_end;
 static uint32_t BASE;
-#define CODE_OFF 0x40
+#define CODE_OFF 0x200
 
 // 判断是否为函数序言：stp x29,x30,[sp,#-N]!  或  paciasp + stp
 static int is_prologue(uint32_t w){

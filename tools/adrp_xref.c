@@ -7,7 +7,7 @@
 #include <stdint.h>
 
 static uint8_t *buf; static size_t fsz;
-#define CODE_OFF 0x40
+#define CODE_OFF 0x200
 
 static uint32_t rd_of(uint32_t i){ return i & 0x1F; }
 
@@ -18,7 +18,13 @@ int main(int argc, char **argv){
     buf = malloc(fsz); fread(buf,1,fsz,f); fclose(f);
 
     uint64_t code_end = fsz; uint32_t csize = 0;
-    if (!memcmp(buf,"DHTB",4)){ memcpy(&csize, buf+48, 4); code_end = csize; }
+    if (!memcmp(buf,"DHTB",4)){
+        /* DHTB 头里的 size 字段不可靠，改为按最后一个非零字节定边界 */
+        size_t last = 0;
+        for (size_t k = fsz; k-- > 0; ) if (buf[k]){ last = k; break; }
+        code_end = last + 1;
+        printf("[*] 实测载荷末尾 0x%zx（头里写的 0x%x）\n", code_end, *(uint32_t*)(buf+48));
+    }
     printf("[*] 载荷 [0x%x, 0x%zx)\n", CODE_OFF, code_end);
 
     for (int a = 2; a < argc; a++){
@@ -52,6 +58,7 @@ int main(int argc, char **argv){
                 // ADD (imm) 64-bit，Rn == rd
                 if ((b & 0x7F000000u) == 0x11000000u && (b >> 31) && ((b >> 5) & 0x1F) == rd){
                     uint32_t imm12 = (b >> 10) & 0xFFF;
+                    if (b & (1u << 22)) imm12 <<= 12;      /* sh=1: 立即数左移 12 位 */
                     if ((uint32_t)(page + imm12) == want){
                         printf("  ADRP@0x%x (X%u) + ADD@0x%x (X%u)  [间隔 %d]\n",
                                pc, rd, bpc, b & 0x1F, k); found++;
