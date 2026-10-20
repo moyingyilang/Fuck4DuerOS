@@ -369,3 +369,95 @@ getlcs  setrma  getsocid  tokenp%d  socidp%d
 - `0x9f23d890`（锁状态）的写入方（无直接 `str`，疑为结构体整体初始化）
 - FDL 的 17 个命令处理函数中，`0x01`/`0x02`/`0x0d` 等的完整语义
 - `uboot_a` 与 `uboot_b` 的关系（双备份还是 A/B 槽）
+
+---
+
+## 补：分区表与存储（P6）
+
+### GPT 分区解析
+
+分区列表输出格式（`0x9f0a77ad` 一带）：
+
+```
+Partition Map for 
+device %d  --   Partition Type: %s
+(%d:%d) Vendor: %s Prod.: %s Rev: %s
+```
+
+这是 U-Boot 标准 `part list` 输出 ⇒ **GPT 解析器存在** ✓
+
+### SD / eMMC 层（`sdhci` 全家桶）
+
+```
+sdhci_send_command / sdhci_send_command_backstage
+sdhci_set_clock / sdhci_init / add_sdhci / sprd_sdhci_init
+read_sd_ramdisk
+boot_sprdisk                  ← 从 SD 启动（对应 SPRDISK_MODE）
+sprd_ce_write_cmd_ecc          ← 加密引擎写（ECC）
+get_sprdimgver_blk_ind / get_sprdmodemimgver_blk_ind / sprd_get_imgversion
+```
+
+### UFS 层
+
+```
+wait_for_cmd_completion / wait_for_previous_scsi_completion
+handle_scsi_completion
+test_ufs_read / test_ufs_repart
+test_ufs_setattr / test_ufs_getattr / test_ufs_setflag / test_ufs_getflag
+write_sparse_img              ← ★ fastboot 稀疏镜像写入
+check_ufs_rpmb_key            ← ★ RPMB 密钥检查
+is_wr_ufs_rpmb_key            ← ★ RPMB 写检查
+BLKOFF_FROM_MAIN
+```
+
+### 签名校验函数
+
+```
+sprd_rsa_verify               ← ★ RSA 校验
+```
+
+**但它与 `check_ufs_rpmb_key` 一样，都是零引用的符号表条目**，
+无法从字符串锚点定位到代码。
+
+### 关于 RPMB 的推断（未验证）
+
+RPMB（Replay Protected Memory Block）是 UFS 的安全存储区，通常用于：
+
+- 设备唯一密钥
+- 回滚计数器
+- 安全启动状态
+
+**`0x9f23d890`（锁状态）与 `0x9f0f0b74`（启动计数器）很可能源自 RPMB。**
+
+若成立，则：
+
+- 锁状态是**持久**的（不是 BSS 掉电清零）
+- 与之关联的计数器也是持久的
+- 这也解释了为什么「启动尝试计数器」能跨重启累积
+
+**但这一点是推断，没有代码证据支持**——`0x9f23d890` 在全镜像中只有
+`0x9f0232a4` 一处引用（switch 分发），没有任何直接写入。
+
+### 锁状态结构体的邻居引用
+
+`0x9f23d890` 附近的其他字段被以下代码引用：
+
+```
+0x9f23d8a0  ← 0x9f025a0c
+0x9f23d8b0  ← 0x9f026734, 0x9f0268e0, 0x9f026910
+```
+
+说明这是一个**结构体**而非单一变量，各字段被不同子系统访问。
+
+### P6 结论
+
+| 项 | 状态 |
+| --- | --- |
+| GPT 解析 | ✅ 存在（part list 输出） |
+| SD/eMMC 层 | ✅ sdhci 完整 |
+| UFS 层 | ✅ 读写/属性/标志/稀疏镜像 |
+| RSA 校验 | ✅ 函数名存在（代码位置未定位） |
+| RPMB | ✅ 函数名存在（锁状态可能来源，未验证） |
+
+**P6 的可静态分析部分到此为止**——再往下需要 UFS 驱动细节与 RPMB 协议实现，
+而关键函数的代码位置因符号表零引用无法锚定。
