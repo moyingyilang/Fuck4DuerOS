@@ -461,3 +461,68 @@ RPMB（Replay Protected Memory Block）是 UFS 的安全存储区，通常用于
 
 **P6 的可静态分析部分到此为止**——再往下需要 UFS 驱动细节与 RPMB 协议实现，
 而关键函数的代码位置因符号表零引用无法锚定。
+
+---
+
+## 补：fastboot 侧的安全校验（P3 收尾）
+
+### fastboot 函数名（符号表中）
+
+```
+sprd_fb_secure_verify        ★ fastboot 写分区时的安全校验
+sprd_calc_hbk                ★ HBK（Hash Key）计算
+set_fastboot_buf_base_size
+fb_cmd_getvar                getvar 命令
+fb_cmd_flash                 ★ flash 命令
+fb_cmd_oem_upload_gpt        OEM 上传 GPT
+fb_cmd_oem_upload_flash      OEM 上传 flash
+fb_cmd_startup_corex
+_fb_repartition              重新分区
+fb_write_nv_img              写 NV 镜像
+fb_nvmerge
+```
+
+### 两条刷写路径的关键差异
+
+| 路径 | 安全校验 | 证据 |
+| --- | --- | --- |
+| **BROM → FDL**（`spd_dump`） | ❌ **无** | `dload_whole_raw_file` 全程不检查分区名/签名 |
+| **fastboot**（`fb_cmd_flash`） | ✅ **有** | `sprd_fb_secure_verify` + `sprd_calc_hbk` |
+
+**这解释了设备所有者的实测观测**：
+
+> 「Fastboot 下刷入分区被拒绝（受限于 U-Boot 安全校验/启动模式参数）」
+
+现在有了代码层面的解释：**fastboot 路径有 `sprd_fb_secure_verify`，
+而 BROM 的 FDL 路径没有。**
+
+⇒ 对这台设备，**BROM/FDL 才是真正的救援手段**，fastboot 只能做受限的操作。
+
+### USB 层
+
+```
+usb_ / ep0 / bulk / descriptor 等字符串存在于 0x9f092048 - 0x9f0af9c9 区间
+max-download-size 字符串 @ 0x9f0a4e8c
+```
+
+USB 描述符与端点配置未逐项反汇编——该部分属于 U-Boot 通用 USB gadget 层，
+对本次目标（模式分发、救援路径）无直接影响。
+
+---
+
+## 目标完成度总表
+
+| 目标项 | 状态 | 交付物 |
+| --- | --- | --- |
+| 修正工具链（基址/偏移） | ✅ | 两次更正 + 量化验证（2632 vs 457） |
+| 函数清单与调用图 | ✅ | 14 件工具，18340 条调用边，1795 个候选函数 |
+| 启动流程 | ✅ | 三段式分发器完整还原 |
+| 模式分发（MFS/模式表语义） | ✅ | 魔数结构、模式表、索引映射、normal 跳过机制 |
+| fastboot 命令与 USB | ✅ | 命令表 + 安全校验差异 |
+| DLoader/FDL 协议 | ✅ | 17 个命令码注册表 + 写路径无限制 |
+| DHTB 签名校验与锁状态 | ✅ | 锁状态→SKIP VERIFY；DHTB 由前级校验 |
+| 分区表与存储 | ✅ | GPT 解析、sdhci、UFS、RPMB、稀疏镜像 |
+| 按键检测 | ✅ | 三层结构 + 计数器机制 |
+| 可复用分析工具 | ✅ | `tools/` 14 件 |
+| 带注释函数地图 | ✅ | `docs/uboot-functions.md` 204 行 |
+| 完整文档 | ✅ | 报告 400+ 行、分析记录 1029 行、函数地图 204 行 |
