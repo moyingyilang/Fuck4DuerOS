@@ -711,3 +711,148 @@ fastboot flash dtbo     f4d_backup/dtbo_a.img
 # 重启回系统
 fastboot reboot
 ```
+
+---
+
+# U-Boot 逆向：函数地图与模式枚举（2026-10-02 深夜）
+
+## 方法：从「散点」到「地图」
+
+此前按地址单点反汇编。这次换成 **扫函数序言 + 用字符串反推用途**。
+
+新工具 `tools/funcmap.c`：
+
+1. 识别 ARM64 函数序言
+   ```c
+   /* stp x29, x30, [sp, #-N]! */
+   (w & 0xFF800000) == 0xA9800000 && ((w>>5)&0x1F)==0x1E && (w&0x1F)==0x1E
+   /* paciasp */
+   w == 0xD503233F
+   ```
+2. 对每个函数体扫 `ADRP+ADD`，解析出目标字符串
+3. 输出「地址 / 字节数 / 引用字符串」
+
+结果：**1795 个候选函数**，约四成可凭字符串命名。
+
+## 命中的关键函数
+
+```
+地址        字节数   串
+0x9f00b060     92    choose boot mode            ← cboot 的 usage 打印
+0x9f00d274    200    download mode
+0x9f00dd8c     96    FASTBOOT_MODE
+0x9f00de7c    212    FASTBOOT_MODE
+0x9f00e204    612    SPRDISK_MODE
+0x9f017054   1112    sprd_dl_check               ← 下载模式检查
+0x9f02199c    324    dl_cmd_reboot
+0x9f016ba0    236    write_mbr_and_gpt_partitions
+0x9f016c8c    968    sprd_pkcs1_mgf1 / sprd_hash_update
+0x9f01fbd0    484    test_ufs_read
+0x9f0213f0    256    change_ufs_power_mode
+```
+
+## 模式枚举全表（新发现）
+
+`0x9f0a1773` 起：
+
+```
+UNDEFINED_MODE        POWER_DOWN_DEVICE     NORMAL_MODE
+RECOVERY_MODE         FASTBOOT_MODE         ALARM_MODE
+CHARGE_MODE           ENGTEST_MODE          AP_WATCHDOG_REBOOT
+SPECIAL_MODE          UNKNOW_REBOOT_MODE    PANIC_REBOOT
+VMM_PANIC_MODE        TOS_PANIC_MODE
+```
+
+usage 文本 `0x9f0a16a3`：
+
+```text
+mode:
+recovery, fastboot, dloader, charge, normal, vlx, caliberation.
+cboot could enter a mode specified by the mode descriptor.
+it also could enter a proper mode automatically depending on the environment
+```
+
+启动流程提示 `0x9f0a1612` 一带：
+
+```text
+Android boot failed, error %d.
+set env fail!
+ANDROID: Booting slot%s
+bad combination can not boot
+enter boot mode %d
+cboot
+choose boot mode
+```
+
+## 关键结论：模式表零引用
+
+```
+目标                        ADRP+ADD  ADRP+LDR  ADR  绝对指针
+UNDEFINED_MODE                  0         0      0      0
+POWER_DOWN_DEVICE               0         0      0      0
+NORMAL_MODE                     0         0      0      0
+RECOVERY_MODE                   0         0      0      0
+FASTBOOT_MODE                   0         0      0      0
+ALARM_MODE                      0         0      0      0
+CHARGE_MODE                     0         0      0      0
+ENGTEST_MODE                    0         0      0      0
+AP_WATCHDOG_REBOOT              0         0      0      0
+SPECIAL_MODE                    0         0      0      0
+```
+
+**整张表只被 usage 文本使用，没有任何代码读取。**
+
+对 `0x9f00b060` 反汇编印证：
+
+```
+0x9f00b060  stp x29, x30, [sp, -0x20]!
+0x9f00b064  adrp x0, 0x9f0a1000
+0x9f00b06c  add  x0, x0, 0x6b8      → 0x9f0a16b8（usage 片段）
+0x9f00b074  bl   0x9f058364         → 打印
+0x9f00b078  adrp x0, 0x9f0a1000
+0x9f00b07c  add  x0, x0, 0x6c2      → 0x9f0a16c2
+0x9f00b084  bl   0x9f058364
+0x9f00b0b0  b    0x9f058364         → 尾调用打印
+```
+
+**纯 usage 输出，没有任何模式判断。**
+
+## 第四种独立证据
+
+| 序 | 证据 | 方法 |
+| --- | --- | --- |
+| 1 | `first_mode`/`cboot fastboot` 零引用 | 字符串 xref |
+| 2 | `/proc/cmdline` 无 `first_mode=` | 运行时观测 |
+| 3 | 模式枚举表整表零引用 | 字符串 xref（本次） |
+| 4 | `choose boot mode` 函数体只有打印 | 反汇编（本次） |
+
+**⇒ 本 uboot 构建的 `cboot` 只剩「打印帮助」，模式选择逻辑被移除。**
+
+因此：
+
+- `miscdata` 的 `first_mode` 路线：**不可用**
+- uboot 命令 `cboot fastboot`：**不可用**
+- 设备所有者「特殊方法」失效 / Ghidra 改按键无效：**与此一致**
+
+## fastbootd 的真实路径（对照）
+
+uboot 不管，fastbootd 由 Android 侧进入：
+
+```
+misc BCB:
+  0x00  "boot-recovery"
+  0x40  "recovery\n--fastboot\n"
+```
+
+Android `init` 读 BCB → 引导 recovery ramdisk → 收到 `--fastboot`
+→ 启动 fastbootd。
+
+**与 uboot `cboot` 完全无关。**
+
+## 下一步值得做的
+
+- [ ] 反汇编 `sprd_dl_check`（0x9f017054），搞清下载模式进入条件
+- [ ] 找 FDL 协议的命令分发表（对照 `spd_dump` 的 `exec w boot` 走哪条路）
+- [ ] 确认 `dl_cmd_reboot`（0x9f02199c）的行为
+
+这三项属于 **DLoader 角色**，与 `cboot` 并列——而 BROM 救援走的正是这条路径。
